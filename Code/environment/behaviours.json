@@ -1,0 +1,24 @@
+{
+  "classes": [
+    "c_1": {
+      "features": [0, 0],
+      "distribution":"something",
+      "graph": []
+    },
+    "c_2": {
+      "features": [0, 0],
+      "distribution":"something",
+      "graph": []
+    }
+    "c_3": {
+      "features": [0, 0],
+      "distribution":"something",
+      "graph": []
+    }
+    "c_4": {
+      "features": [0, 0],
+      "distribution":"something",
+      "graph": []
+    }
+  ]
+}

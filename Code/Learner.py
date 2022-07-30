@@ -1,8 +1,9 @@
 import numpy as np
 
 class Learner:
-    def __init__(self, n_arms):
+    def __init__(self, n_arms, n_products):
         self.n_arms = n_arms
+        self.n_products = n_products
         self.t = 0
         self.reward_per_arm = [[] for i in range(n_arms)] 
         self.collected_rewards = np.array([])
@@ -13,3 +14,6 @@ class Learner:
     def update(self, pulled_arm, rewards):
         self.reward_per_arm[pulled_arm].append(reward)                       
         self.collected_rewards = np.append(self.collected_rewards, reward)
+
+    def select_superarm(self):
+        pass
