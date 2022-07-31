@@ -1,3 +1,6 @@
+DATA_PATH = "Code/data/full_graph_customer.json"
+
+
 class Customer:
     """
     Let P_SEC be a secondary product, p_c the probability to click the product and p_p the probability to buy p_p as
@@ -12,6 +15,47 @@ class Customer:
         self.feature_1 = feature_1
         self.feature_2 = feature_2
 
-        def get_behaviour(f_1, f_2):
-            "read json"
+        def _init_customer(path=DATA_PATH):
+            """
+            read json for customers
+            :return:
+            """
             pass
+
+    def get_features(self):
+        pass
+
+    def get_probability_buy(self, product):
+        pass
+
+    def get_probability_click(self, primary, secondary):
+        """
+        get probability to click the secondary product given that the user has seen primary prodcut and the user is
+        observing the secondary product
+        :param primary:
+        :param secondary:
+        :return:
+        """
+
+    def get_distribution_alpha(self):
+        pass
+
+    def get_num_prods_distribution(self):
+        pass
+
+    def get_num_prods(self):
+        pass
+
+    def set_probability_click(self):
+        pass
+
+    def set_probability_buy(self):
+        pass
+
+    def set_distribution_alpha(self):
+        pass
+
+    def set_num_prods(self):
+        pass
+
+
