@@ -2,6 +2,7 @@ import numpy as np
 import utils
 import ReportSimulation
 
+
 class Simulator:
     """
     This class is used both by the environment and the learners. The former uses this class to create a round,

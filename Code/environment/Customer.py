@@ -1,4 +1,4 @@
-DATA_PATH = "Code/data/full_graph_customer.json"
+DATA_PATH = "Code/data/customer_classes.json"
 
 
 class Customer:
@@ -11,9 +11,13 @@ class Customer:
     Finally p_c = p(P_SEC| P_PRIME) * lambda where lambda = 1 if P_SEC is in 1st slot, otherwise a fixed number in
     (0, 1)
     """
-    def __init__(self, feature_1, feature_2):
+    def __init__(self, feature_1, feature_2, alpha, num_prods_distribution, click_graph, buy_distribution):
         self.feature_1 = feature_1
         self.feature_2 = feature_2
+        self.alpha = alpha
+        self.num_prods_distributions = num_prods_distribution
+        self.click_graph = click_graph
+        self.buy_distribution = buy_distribution
 
         def _init_customer(path=DATA_PATH):
             """
