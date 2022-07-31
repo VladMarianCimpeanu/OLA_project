@@ -1,6 +1,6 @@
 import numpy as np
 import utils
-
+import ReportSimulation
 
 class Simulator:
     """
@@ -13,20 +13,15 @@ class Simulator:
         self.products_graph = products_graph
         self.customers_distribution = customer_distribution
 
-    def run(self, rounds):
-        count_visits = np.array([])
-        count_conversions = np.array([])
-        count_sold_items = np.array([])
+    def run(self, rounds, super_arm):
+        report = ReportSimulation.ReportSimulation()
         for _ in range(rounds):
             index = utils.sample_categorical_distribution(self.customers_distribution)
             c = self.customers[index]
-            visits, conversions, sold = self.run_customer(c)
-            count_visits += visits
-            count_conversions += conversions
-            count_sold_items += sold
-        return count_visits, count_conversions, count_sold_items
+            self.run_customer(c, super_arm, report)
+        return report
 
-    def run_customer(self, c) -> list:
+    def run_customer(self, c, super_arm, report) -> list:
         """
         run simulation for a single customer. Stops when the customer sees all the products as primary or he decides
         to not buy any product.
@@ -41,3 +36,5 @@ class Simulator:
         distribution_alpha = customer.get_distribution_alpha()
         alphas = np.random.dirichlet(distribution_alpha)
         return utils.sample_categorical_distribution(alphas)
+
+

@@ -1,6 +1,8 @@
 import numpy as np
 import settings
 from Code.environment.Customer import Customer
+import Code.utils
+from Code.MC_simulator import Simulator
 
 
 class Environment:
@@ -16,12 +18,14 @@ class Environment:
         self.variance_customers = variance_customers
         self.customers_distribution = settings.customers_distribution  # categorical distribution
         self.p_lambda = p_lambda
+        self.simulator = None
 
     def _init_products_graph(self):
         """
         read json for customers
         :return:
         """
+        self.graph = []
         pass
 
     def round(self, pulled_arm, customer=None) -> list:
@@ -40,6 +44,9 @@ class Environment:
             ]
         else:
             customers = [customer] * len(self.customers_distribution)
+        if self.simulator is None:
+            self.simulator = Simulator(customers, self.graph, self.customers_distribution)
+        return self.simulator.run(number_customers, pulled_arm)
 
     def _generate_customer(self):
         pass

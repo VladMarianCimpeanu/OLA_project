@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class Learner:
     def __init__(self, n_arms, n_products):
         self.n_arms = n_arms
