@@ -3,9 +3,9 @@ from Code import Learner
 
 
 class TSLearner(Learner):
-    def __init__(self, n_arms):
-        super().__init__(n_arms)
-        self.beta_parameters = np.ones((n_arms, 2))
+    def __init__(self, n_arms, n_products, customer, products_graph):
+        super().__init__(n_arms, n_products, customer, products_graph)
+        self.beta_parameters = np.ones((n_products, n_arms, 2))
 
     def pull_arm(self):
         "select the arm to pull accordingly to beta dist (alpha and beta params"
