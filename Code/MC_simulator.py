@@ -49,6 +49,7 @@ class Simulator:
                         shopping_dfs(secondary)
 
         product = self._choose_primary(c)
+        report.update_starts(product)
         shopping_dfs(product)
 
     @staticmethod
