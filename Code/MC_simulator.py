@@ -17,7 +17,7 @@ class Simulator:
         self.customers_distribution = customer_distribution
 
     def run(self, rounds, super_arm):
-        report = ReportSimulation.ReportSimulation(super_arm)
+        report = ReportSimulation.ReportSimulation(len(super_arm))
         for _ in range(rounds):
             index = sample_categorical_distribution(self.customers_distribution)
             c = self.customers[index]

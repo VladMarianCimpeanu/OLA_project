@@ -20,17 +20,16 @@ class Learner:
         self.arms = arms
         self.n_products = n_products
         self.t = 0
-        self.rewards_per_arm = np.array([
+        self.rewards_per_arm = [
             [
                 0 for j in range(n_arms)
             ] for i in range(n_products)
-        ])
-        self.collected_rewards = np.array([
-            [
-                [] for j in range(n_arms)
-            ] for i in range(n_products)
-        ])
+        ]
+        self.collected_rewards = [
+            [] for _ in range(n_products)
+        ]
         self.customer = customer
+        self.pulled = []
         # load products graph
         self.graph = self._load_products(products_graph)
         self.super_arms = self._get_enumerations()
@@ -44,8 +43,16 @@ class Learner:
     def reset(self):
         self.__init__(self.n_arms, self.t)
 
-    def update(self, pulled_arm, report):
+    def act(self):
         pass
+
+    def update(self, pulled_arm, report):
+        self.t += 1
+        conversion_rates = report.get_conversion_rate()
+        for index, arm in enumerate(pulled_arm):
+            self.rewards_per_arm[index][arm].append(conversion_rates[index])
+            self.rewards_per_arm[index].append(conversion_rates[index])
+        self.pulled.append(pulled_arm)
 
     def select_superarm(self, rounds=10):
         """
@@ -53,6 +60,8 @@ class Learner:
         :param rounds: number of simulations that must be run for each combinations of arms
         :return: a list containing the indexes of the best arms for each product according to the MC simulation.
         """
+        conversion_rates = self.estimate_conversion_rates()
+        self.customer.set_probability_buy(conversion_rates)
         simulation = Simulator(self.customer, self.graph, [1])
         maximum_estimate = -1  # assuming that a reward is a non negative number.
         best_super_arm = None
@@ -70,7 +79,7 @@ class Learner:
         :param depth: current depth in the search tree. By default it is set to 0 (root of the search tree)
         :param indexes: list containing the indexes belonging to a single combination. Keep it None.
         :param combinations: list containing all the combinations found. Keep it None
-        :return: a list conaining all the possible combinations.
+        :return: a list containing all the possible combinations.
         """
         if indexes is None:
             indexes = []
@@ -85,6 +94,14 @@ class Learner:
             new_indexes.append(element)
             combinations = self._get_enumerations(new_depth, new_indexes, combinations)
         return combinations
+
+    def estimate_conversion_rates(self):
+        """
+        This method evaluate the conversion rate associated to each arm based on the specific algorithm has been used.
+        This method should be overridden by each subclass of Learner.
+        :return: matrix whose rows are products and columns are conversion rates associated to a specific arm (price).
+        """
+        return None
 
 
 
