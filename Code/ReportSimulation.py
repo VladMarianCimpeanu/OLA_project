@@ -48,6 +48,12 @@ class ReportSimulation:
     def get_conversion_rate(self):
         return [bought / seen for bought, seen in zip(self.counter_items_bought, self.counter_seen)]
 
+    def get_seen(self):
+        return self.counter_seen
+
+    def get_bought(self):
+        return self.counter_items_bought
+
     def get_graph(self):
         return [[self.graph[primary][secondary] / self.counter_seen[primary]
                  for secondary in range(self.n_products)

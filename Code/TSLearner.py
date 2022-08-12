@@ -7,15 +7,24 @@ class TSLearner(Learner):
         super().__init__(n_arms, n_products, customer, products_graph)
         self.beta_parameters = np.ones((n_products, n_arms, 2))
 
-    def pull_arm(self):
-        "select the arm to pull accordingly to beta dist (alpha and beta params"
-        idx = np.argmax(np.random.beta(self.beta_parameters[:, 0], self.beta_parameters[:, 1]))
-        return idx
+    def estimate_conversion_rates(self):
+        return np.random.beta(self.beta_parameters[:, :, 0], self.beta_parameters[:, :, 1])
 
-    def update(self, pulled_arm, reward):
-        "update the alpha and beta parameter"
-        self.t += 1
+    def update(self, pulled_arm, report):
+        """
+        update the alpha and beta parameter
+        :param pulled_arm: arms pulled during the interaction with the environment.
+        :param report: ReportSimulation object containing all the relevant information about the real interaction
+        with the environment.
+        :return:
+        """
+        reward = report.reward(pulled_arm)
         self.update_observations(pulled_arm, reward)  # method of superclass
-        # update a params
-        self.beta_parameters[pulled_arm, 0] = self.beta_parameters[pulled_arm, 0] + reward
-        self.beta_parameters[pulled_arm, 1] = self.beta_parameters[pulled_arm, 1] + 1.0 - reward
+        # update alpha and beta params
+        seen = report.get_seen()
+        bought = report.get_bought()
+        for index, arm in enumerate(pulled_arm):
+            self.beta_parameters[index, arm, 0] = self.beta_parameters + bought[index]
+            self.beta_parameters[index, arm, 1] = self.beta_parameters + seen[index] - bought[index]
+
+

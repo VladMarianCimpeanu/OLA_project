@@ -10,7 +10,7 @@ class Learner:
         :param n_products: number of products
         :param customer: customer contains all the BELIVED information about the customer by the learner.
         The learner updates the customer's attributes that are not known. The base class assumes that only the conversion
-        rate should be estimated, so no customer's attribute will be updated.
+        rate should be estimated, so no customer's attribute will be updated apart from the conversion rates.
         :param products_graph: name of the json file in Code/data with all the relevant information
         about the products graph given by the business unit. The file must contain a key named 'graph', whereas its
         value is the graph in matrix form.
@@ -46,7 +46,7 @@ class Learner:
     def act(self):
         pass
 
-    def update(self, pulled_arm, report):
+    def update_observations(self, pulled_arm, report):
         self.t += 1
         conversion_rates = report.get_conversion_rate()
         for index, arm in enumerate(pulled_arm):
@@ -101,7 +101,7 @@ class Learner:
         This method should be overridden by each subclass of Learner.
         :return: matrix whose rows are products and columns are conversion rates associated to a specific arm (price).
         """
-        return None
+        return np.array([])
 
 
 
