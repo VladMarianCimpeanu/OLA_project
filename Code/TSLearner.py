@@ -18,8 +18,7 @@ class TSLearner(Learner):
         with the environment.
         :return:
         """
-        reward = report.reward(pulled_arm)
-        self.update_observations(pulled_arm, reward)  # method of superclass
+        self.update_observations(pulled_arm, report)  # method of superclass
         # update alpha and beta params
         seen = report.get_seen()
         bought = report.get_bought()
