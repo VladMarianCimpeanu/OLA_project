@@ -23,7 +23,7 @@ class TSLearner(Learner):
         seen = report.get_seen()
         bought = report.get_bought()
         for index, arm in enumerate(pulled_arm):
-            self.beta_parameters[index, arm, 0] = self.beta_parameters + bought[index]
-            self.beta_parameters[index, arm, 1] = self.beta_parameters + seen[index] - bought[index]
+            self.beta_parameters[index, arm, 0] = self.beta_parameters[index, arm, 0] + bought[index]
+            self.beta_parameters[index, arm, 1] = self.beta_parameters[index, arm, 1] + seen[index] - bought[index]
 
 
