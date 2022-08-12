@@ -1,24 +1,38 @@
 import numpy as np
 from Code import Learner
 
+
 class UCBLearner(Learner):
-    def __init__(self, n_arms):
-        super().__init__(n_arms)
-        self.means = np.zeros(n_arms)
-        self.widths = np.array([np.inf for _ in range(n_arms)])
+    def __init__(self, n_arms, n_products, customer, products_graph):
+        super().__init__(n_arms, n_products, customer, products_graph)
+        self.means = np.zeros((n_products, n_arms))
+        self.upper_bounds = np.full((n_products, n_arms), np.inf)
+        self.seen = np.zeros((n_products, n_arms))
 
-    def pull_arm():
-        "select the arm to pull "
-        idx = np.argmax(self.means+self.widths)
-        return idx
+    def estimate_conversion_rates(self):
+        return self.means + self.upper_bounds
 
-    def update(self, pulled_arm, reward):
-        "update "
-        self.update_observations(pulled_arm, reward)  #method of superclass
-        self.means[arm_pulled] = np.mean(self.reward_per_arm[arm_pulled])
-        for idx in range(self.n_arms):  #get the upper confidece bound
-            n = len(self.reward_per_arm[idx])
-            if n>0:
-                self.widths[idx] = np.sqrt(2*np.log(self.t)/n)
-            else:
-                self.widths[idx] = np.inf
+    def update(self, pulled_arm, report):
+        """
+        update the confidence upper bounds of all arms and means of the pulled arms.
+        :param pulled_arm:
+        :param report:
+        :return:
+        """
+        self.update_observations(pulled_arm, report)  # method of superclass
+        seen = np.array(report.get_seen())
+        bought = report.get_bought()
+        # update counter of samples seen
+        tot_seen = np.copy(self.seen)
+        for product, arm in enumerate(pulled_arm):
+            tot_seen[product, arm] = tot_seen[product, arm] + seen[product]
+        # update means
+        for product, arm in enumerate(pulled_arm):
+            self.means[product, arm] = (self.means[product, arm] * self.seen[product, arm] + bought[product]) / (tot_seen[product, arm])
+        self.seen = tot_seen
+        # update upper bounds
+        for product in range(self.n_products):
+            for arm in range(self.n_arms):
+                if self.seen[product, arm] != 0:
+                    tot_samples = np.sum(self.seen[product])
+                    self.upper_bounds[product, arm] = np.sqrt(2 * self.means[product, arm] * np.log(self.t) / tot_samples)
