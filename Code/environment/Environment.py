@@ -1,8 +1,9 @@
 import numpy as np
-import settings
+from Code.environment import settings
 from Code.environment.Customer import Customer
 import Code.utils
 from Code.MC_simulator import Simulator
+import json
 
 
 class Environment:
@@ -17,6 +18,7 @@ class Environment:
         self.customers_per_day = customers_per_day
         self.variance_customers = variance_customers
         self.customers_distribution = settings.customers_distribution  # categorical distribution
+        self.products_graph = self._init_products_graph(products_graph)
         self.p_lambda = p_lambda
         self.simulator = None
         self.customers = [
@@ -26,13 +28,14 @@ class Environment:
                 Customer(1, 1)
             ]
 
-    def _init_products_graph(self):
+    def _init_products_graph(self, name):
         """
         read json for customers
         :return:
         """
-        self.graph = []
-        pass
+        file = open('Code/data/{}'.format(name))
+        data = json.load(file)
+        return data['graph']
 
     def round(self, pulled_arm):
         """

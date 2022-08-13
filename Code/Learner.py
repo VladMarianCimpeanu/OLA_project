@@ -1,7 +1,8 @@
 import numpy as np
-from MC_simulator import Simulator
+from Code.MC_simulator import Simulator
 import json
 
+# TODO we removed the param arms (is seams that the learners do not use it)
 
 class Learner:
     def __init__(self, n_arms, n_products, customer, products_graph, arms):

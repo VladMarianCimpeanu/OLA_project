@@ -1,7 +1,7 @@
 import numpy as np
-from utils import sample_categorical_distribution
-import ReportSimulation
-from environment.settings import λ_SLOTS
+from Code.utils import sample_categorical_distribution
+from Code.ReportSimulation import ReportSimulation
+from Code.environment.settings import λ_SLOTS
 
 
 class Simulator:

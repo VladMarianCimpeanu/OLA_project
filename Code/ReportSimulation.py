@@ -54,6 +54,9 @@ class ReportSimulation:
     def get_bought(self):
         return self.counter_items_bought
 
+    def get_amount_bought(self):
+        return self.counter_num_bought
+
     def get_graph(self):
         return [[self.graph[primary][secondary] / self.counter_seen[primary]
                  for secondary in range(self.n_products)
