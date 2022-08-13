@@ -36,7 +36,7 @@ class Environment:
         read json for customers
         :return:
         """
-        file_position = "{}/../data/{}}".format(os.path.dirname(os.path.abspath(__file__)), name)
+        file_position = "{}/../data/{}".format(os.path.dirname(os.path.abspath(__file__)), name)
         file = open(file_position)
         data = json.load(file)
         return data['graph']
@@ -71,6 +71,11 @@ class Environment:
         return aggregate_alphas
 
     def get_aggregate_num_prods_distribution(self):
+        """
+        Compute the aggregate parameters for the probability distribution about the number of items to buy for a
+        specific product.
+        :return: get a np.array containing all the aggregate probability distributions for each product for each arm.
+        """
         current_distribution = np.zeros_like(self.arms)
         for index, customer in enumerate(self.customers):
             current_distribution = current_distribution +\
@@ -78,10 +83,14 @@ class Environment:
         return current_distribution
 
     def get_aggregate_click_graph(self):
-        pass
-
-    def get_aggregate_buy_distribution(self):
-        pass
+        """
+        Compute the click graph for aggregate customers.
+        :return: an np.array containing the click graph as matrix.
+        """
+        aggregate_graph = np.zeros((len(self.arms), len(self.arms)))
+        for index, customer in enumerate(self.customers):
+            aggregate_graph = aggregate_graph + np.array(customer.get_click_graph()) + self.customers_distribution[index]
+        return aggregate_graph
 
 
 if __name__ == "__main__":
@@ -99,3 +108,4 @@ if __name__ == "__main__":
       ]
     env = Environment(file_customers, mean, sigma, p_l, file_products, arms)
     print(env.get_aggregate_alphas())
+    print(env.get_aggregate_num_prods_distribution())

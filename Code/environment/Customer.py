@@ -56,6 +56,9 @@ class Customer:
         """
         return self.click_graph[primary][secondary]
 
+    def get_click_graph(self):
+        return self.click_graph
+
     def get_distribution_alpha(self):
         return self.alpha
 
