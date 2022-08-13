@@ -1,7 +1,9 @@
 import json
 import numpy as np
+import os
 
-DATA_PATH = "Code/data/customer_classes.json"
+
+DATA_PATH = "{}/../data/customer_classes.json".format(os.path.dirname(os.path.abspath(__file__)))
 JSON_DATA = json.load(open(DATA_PATH, 'r'))['classes']
 
 

@@ -1,8 +1,8 @@
 import numpy as np
 from Code.MC_simulator import Simulator
 import json
+import os
 
-# TODO we removed the param arms (is seams that the learners do not use it)
 
 class Learner:
     def __init__(self, n_arms, n_products, customer, products_graph, arms):
@@ -37,7 +37,8 @@ class Learner:
 
     @classmethod
     def _load_products(cls, name):
-        file = open('Code/data/{}'.format(name))
+        file_position = "{}/../data/{}".format(os.path.dirname(os.path.abspath(__file__)), name)
+        file = open(file_position)
         data = json.load(file)
         return data['graph']
 

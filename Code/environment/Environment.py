@@ -4,10 +4,11 @@ from Code.environment.Customer import Customer
 import Code.utils
 from Code.MC_simulator import Simulator
 import json
+import os
 
 
 class Environment:
-    def __init__(self, customers_behaviour, customers_per_day, variance_customers, p_lambda, products_graph):
+    def __init__(self, customers_behaviour, customers_per_day, variance_customers, p_lambda, products_graph, arms):
         """
         :param customers_behaviour: path file to customers behaviour
         :param customers_per_day:
@@ -20,6 +21,7 @@ class Environment:
         self.customers_distribution = settings.customers_distribution  # categorical distribution
         self.products_graph = self._init_products_graph(products_graph)
         self.p_lambda = p_lambda
+        self.arms = arms
         self.simulator = None
         self.customers = [
                 Customer(0, 0),
@@ -28,12 +30,14 @@ class Environment:
                 Customer(1, 1)
             ]
 
-    def _init_products_graph(self, name):
+    @classmethod
+    def _init_products_graph(cls, name):
         """
         read json for customers
         :return:
         """
-        file = open('Code/data/{}'.format(name))
+        file_position = "{}/../data/{}}".format(os.path.dirname(os.path.abspath(__file__)), name)
+        file = open(file_position)
         data = json.load(file)
         return data['graph']
 
@@ -45,7 +49,7 @@ class Environment:
         """
         number_customers = np.maximum(int(np.random.normal(self.customers_per_day, self.variance_customers)), 1)
         if self.simulator is None:
-            self.simulator = Simulator(self.customers, self.graph, self.customers_distribution)
+            self.simulator = Simulator(self.customers, self.products_graph, self.customers_distribution)
         return self.simulator.run(number_customers, pulled_arm)
 
     def _generate_customer(self):
@@ -67,7 +71,11 @@ class Environment:
         return aggregate_alphas
 
     def get_aggregate_num_prods_distribution(self):
-        pass
+        current_distribution = np.zeros_like(self.arms)
+        for index, customer in enumerate(self.customers):
+            current_distribution = current_distribution +\
+                                   np.array(customer.get_num_prods_distribution()) * self.customers_distribution[index]
+        return current_distribution
 
     def get_aggregate_click_graph(self):
         pass
@@ -76,3 +84,18 @@ class Environment:
         pass
 
 
+if __name__ == "__main__":
+    file_customers = "customer_classes.json"
+    file_products = "business_full_graph.json"
+    mean = 100
+    sigma = 20
+    p_l = 0.5
+    arms = [
+        [20, 12, 15, 10],
+        [3, 4, 1, 8],
+        [24, 13, 18, 21],
+        [15, 12, 18, 20],
+        [12, 15, 19, 21]
+      ]
+    env = Environment(file_customers, mean, sigma, p_l, file_products, arms)
+    print(env.get_aggregate_alphas())
