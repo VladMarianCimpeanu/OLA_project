@@ -30,22 +30,46 @@ class ReportSimulation:
         return self.counter_starts
 
     def seen(self, product_id):
+        """
+        Update the number of times a given product has been seen during the simulation.
+        :param product_id: index of the product
+        :return: None
+        """
         if self.debug:
             logging.info(f"seen: {product_id}")
         self.counter_seen[product_id] += 1
 
     def bought(self, product_id, amount):
+        """
+        Update the number of times a product has been bought during the simulation.
+        This method updates both the counter about the conversion rates and the one about the total amount of items
+        bought.
+        :param product_id: index of the product.
+        :param amount: number of units bought for that item
+        :return: None
+        """
         if self.debug:
             logging.info(f"bought: {product_id} {amount}")
         self.counter_items_bought[product_id] += 1
         self.counter_num_bought[product_id] += amount
 
     def move(self, primary, secondary):
+        """
+        Update the number of times an edge has been activated. An edge is a click on a secondary product
+        given that the customer has seen a given primary product.
+        :param primary: index of product from which the interaction started.
+        :param secondary: index of product clicked.
+        :return: None
+        """
         if self.debug:
             logging.info(f"bought: {primary} {secondary}")
         self.graph[primary][secondary] += 1
 
     def get_conversion_rate(self):
+        """
+        Compute the conversion rates.
+        :return: list containing conversion rates in the last simulation.
+        """
         return [bought / seen for bought, seen in zip(self.counter_items_bought, self.counter_seen)]
 
     def get_seen(self):
@@ -65,5 +89,10 @@ class ReportSimulation:
                 ]
 
     def reward(self, pulled_arms):
-        assert len(pulled_arms) == len(self.counter_items_bought)
-        return sum([(arm+1)*num for arm, num in zip(pulled_arms, self.counter_items_bought)])
+        """
+        Compute the total reward achieved during the simulation
+        :param pulled_arms: list containing the prices for each product.
+        :return: return a floating point representing the total reward achieved during the simulation.
+        """
+        assert len(pulled_arms) == len(self.counter_num_bought)
+        return sum([(arm+1)*num for arm, num in zip(pulled_arms, self.counter_num_bought)])

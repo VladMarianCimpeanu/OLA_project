@@ -1,10 +1,10 @@
 import numpy as np
-from Code import Learner
+from Code.Learner import Learner
 
 
 class UCBLearner(Learner):
-    def __init__(self, n_arms, n_products, customer, products_graph):
-        super().__init__(n_arms, n_products, customer, products_graph)
+    def __init__(self, n_arms, n_products, customer, products_graph, arms):
+        super().__init__(n_arms, n_products, customer, products_graph, arms)
         self.means = np.zeros((n_products, n_arms))
         self.upper_bounds = np.full((n_products, n_arms), np.inf)
         self.seen = np.zeros((n_products, n_arms))
@@ -15,9 +15,9 @@ class UCBLearner(Learner):
     def update(self, pulled_arm, report):
         """
         update the confidence upper bounds of all arms and means of the pulled arms.
-        :param pulled_arm:
-        :param report:
-        :return:
+        :param pulled_arm: list containing indexes of the arms in the super arm.
+        :param report: simulation report
+        :return: None
         """
         self.update_observations(pulled_arm, report)  # method of superclass
         seen = np.array(report.get_seen())

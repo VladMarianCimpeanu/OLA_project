@@ -21,23 +21,16 @@ class Learner:
         self.arms = arms
         self.n_products = n_products
         self.t = 0
-        self.rewards_per_arm = [
-            [
-                0 for j in range(n_arms)
-            ] for i in range(n_products)
-        ]
-        self.collected_rewards = [
-            [] for _ in range(n_products)
-        ]
         self.customer = customer
         self.pulled = []
         # load products graph
         self.graph = self._load_products(products_graph)
         self.super_arms = self._get_enumerations()
+        self.history_rewards = []
 
     @classmethod
     def _load_products(cls, name):
-        file_position = "{}/../data/{}".format(os.path.dirname(os.path.abspath(__file__)), name)
+        file_position = "{}/data/{}".format(os.path.dirname(os.path.abspath(__file__)), name)
         file = open(file_position)
         data = json.load(file)
         return data['graph']
@@ -49,12 +42,15 @@ class Learner:
         pass
 
     def update_observations(self, pulled_arm, report):
+        """
+        :param pulled_arm: list containing indexes of the pulled arms.
+        :param report: simulation report
+        :return: None
+        """
         self.t += 1
-        conversion_rates = report.get_conversion_rate()
-        for index, arm in enumerate(pulled_arm):
-            self.rewards_per_arm[index][arm].append(conversion_rates[index])
-            self.rewards_per_arm[index].append(conversion_rates[index])
-        self.pulled.append(pulled_arm)
+        prices = [self.arms[p][a] for p, a in enumerate(pulled_arm)]
+        self.history_rewards.append(report.reward(prices))
+        self.pulled.append(pulled_arm.copy())
 
     def select_superarm(self, rounds=10):
         """
@@ -64,7 +60,7 @@ class Learner:
         """
         conversion_rates = self.estimate_conversion_rates()
         self.customer.set_probability_buy(conversion_rates)
-        simulation = Simulator(self.customer, self.graph, [1])
+        simulation = Simulator([self.customer], self.graph, [1])
         maximum_estimate = -1  # assuming that a reward is a non negative number.
         best_super_arm = None
         for super_arm in self.super_arms:
@@ -91,7 +87,7 @@ class Learner:
             combinations.append(indexes)
             return combinations
         new_depth = depth + 1
-        for element in self.arms[depth]:
+        for element in range(self.n_arms):
             new_indexes = indexes.copy()
             new_indexes.append(element)
             combinations = self._get_enumerations(new_depth, new_indexes, combinations)
@@ -105,5 +101,10 @@ class Learner:
         """
         return np.array([])
 
+    def get_all_pulled(self):
+        return self.pulled
+
+    def get_last_pulled(self):
+        return self.pulled[-1]
 
 

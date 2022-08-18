@@ -68,6 +68,9 @@ class Customer:
     def get_num_prods(self, product, price):
         return np.random.geometric(self.num_prods_distributions[product][price])
 
+    def get_buy_distribution(self):
+        return self.buy_distribution
+
     def set_probability_click(self, click_graph):
         self.click_graph = click_graph
 

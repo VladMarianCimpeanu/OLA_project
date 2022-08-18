@@ -24,11 +24,11 @@ class Environment:
         self.arms = arms
         self.simulator = None
         self.customers = [
-                Customer(0, 0),
-                Customer(0, 1),
-                Customer(1, 0),
-                Customer(1, 1)
-            ]
+            Customer(0, 0),
+            Customer(0, 1),
+            Customer(1, 0),
+            Customer(1, 1)
+        ]
 
     @classmethod
     def _init_products_graph(cls, name):
@@ -78,7 +78,7 @@ class Environment:
         """
         current_distribution = np.zeros_like(self.arms)
         for index, customer in enumerate(self.customers):
-            current_distribution = current_distribution +\
+            current_distribution = current_distribution + \
                                    np.array(customer.get_num_prods_distribution()) * self.customers_distribution[index]
         return current_distribution
 
@@ -89,8 +89,15 @@ class Environment:
         """
         aggregate_graph = np.zeros((len(self.arms), len(self.arms)))
         for index, customer in enumerate(self.customers):
-            aggregate_graph = aggregate_graph + np.array(customer.get_click_graph()) + self.customers_distribution[index]
+            aggregate_graph = aggregate_graph + np.array(customer.get_click_graph()) * self.customers_distribution[
+                index]
         return aggregate_graph
+
+    def _get_aggregate_buy(self):
+        aggregate_buy = np.zeros_like(self.arms)
+        for index, customer in enumerate(self.customers):
+            aggregate_buy = aggregate_buy + np.array(customer.get_buy_distribution()) * self.customers_distribution[
+                index]
 
 
 if __name__ == "__main__":
@@ -105,7 +112,7 @@ if __name__ == "__main__":
         [24, 13, 18, 21],
         [15, 12, 18, 20],
         [12, 15, 19, 21]
-      ]
+    ]
     env = Environment(file_customers, mean, sigma, p_l, file_products, arms)
     print(env.get_aggregate_alphas())
     print(env.get_aggregate_num_prods_distribution())

@@ -17,7 +17,7 @@ class Simulator:
         self.customers_distribution = customer_distribution
 
     def run(self, rounds, super_arm):
-        report = ReportSimulation.ReportSimulation(len(super_arm))
+        report = ReportSimulation(len(super_arm))
         for _ in range(rounds):
             index = sample_categorical_distribution(self.customers_distribution)
             c = self.customers[index]
@@ -28,7 +28,6 @@ class Simulator:
         """
         run simulation for a single customer. Stops when the customer sees all the products as primary, or he decides
         not to buy any product.
-
         :param c:
         :param super_arm:
         :param report:
