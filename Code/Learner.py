@@ -52,20 +52,22 @@ class Learner:
         self.history_rewards.append(report.reward(prices))
         self.pulled.append(pulled_arm.copy())
 
-    def select_superarm(self, rounds=10):
+    def select_superarm(self, rounds=50):
         """
         This method runs a montecarlo simulation for each combination of arms in order to determine the best superarm.
         :param rounds: number of simulations that must be run for each combinations of arms
         :return: a list containing the indexes of the best arms for each product according to the MC simulation.
         """
         conversion_rates = self.estimate_conversion_rates()
+        conversion_rates = np.clip(conversion_rates, 0, 1)
         self.customer.set_probability_buy(conversion_rates)
         simulation = Simulator([self.customer], self.graph, [1])
         maximum_estimate = -1  # assuming that a reward is a non negative number.
         best_super_arm = None
         for super_arm in self.super_arms:
-            outcome = simulation.run(rounds, super_arm)
-            reward = outcome.reward(super_arm)
+            # outcome = simulation.run(rounds, super_arm)
+            # reward = outcome.reward(super_arm)
+            reward = rounds * sum([(arm+1)*num for arm, num in zip(super_arm, simulation.run_dp(super_arm))])
             if reward > maximum_estimate:
                 maximum_estimate = reward
                 best_super_arm = super_arm

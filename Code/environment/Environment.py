@@ -117,11 +117,10 @@ class Environment:
         for iteration, super_arm in enumerate(enumerations):
             if iteration % 10 == 0:
                 utils.progress_bar(iteration, len(enumerations))
-            rewards = []
+
             prices = [self.arms[p][a] for p, a in enumerate(super_arm)]
-            for i in range(precision):
-                rewards.append(sim.run(self.customers_per_day, super_arm).reward(prices))
-            expected_reward = sum(rewards) / len(rewards)
+            expected_reward = self.customers_per_day * sum([(arm+1)*num for arm, num in zip(super_arm, sim.run_dp(super_arm))])
+            # print(super_arm, expected_reward)
             if expected_reward > best_reward:
                 best_reward = expected_reward
                 best_super_arm = super_arm
