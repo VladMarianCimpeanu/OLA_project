@@ -18,17 +18,17 @@ class Environment:
         self.customers_behaviour = customers_behaviour
         self.customers_per_day = customers_per_day
         self.variance_customers = variance_customers
-        self.customers_distribution = settings.customers_distribution  # categorical distribution
+        self.customers_distribution = [1]
+        #self.customers_distribution = settings.customers_distribution  # categorical distribution
         self.products_graph = self._init_products_graph(products_graph)
         self.p_lambda = p_lambda
         self.arms = arms
         self.simulator = None
         self.customers = [
-            Customer(0, 0),
-            Customer(0, 1),
-            Customer(1, 0),
-            Customer(1, 1)
-        ]
+            Customer(0, 0)]
+ #           Customer(0, 1),
+ #           Customer(1, 0),
+ #           Customer(1, 1)
 
     @classmethod
     def _init_products_graph(cls, name):

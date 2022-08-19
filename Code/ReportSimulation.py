@@ -95,4 +95,5 @@ class ReportSimulation:
         :return: return a floating point representing the total reward achieved during the simulation.
         """
         assert len(pulled_arms) == len(self.counter_num_bought)
+        # TODO: arm+1 ?? discuss
         return sum([(arm+1)*num for arm, num in zip(pulled_arms, self.counter_num_bought)])

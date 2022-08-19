@@ -66,7 +66,8 @@ class Customer:
         return self.num_prods_distributions
 
     def get_num_prods(self, product, price):
-        return np.random.geometric(self.num_prods_distributions[product][price])
+        return 1
+        #return np.random.geometric(self.num_prods_distributions[product][price])
 
     def get_buy_distribution(self):
         return self.buy_distribution
