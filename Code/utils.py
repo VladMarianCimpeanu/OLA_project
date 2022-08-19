@@ -1,4 +1,6 @@
 import numpy as np
+import sys
+from math import ceil
 
 
 def sample_categorical_distribution(probabilities):
@@ -15,3 +17,19 @@ def sample_categorical_distribution(probabilities):
     for index, item in enumerate(intervals):
         if uniform_sample <= item:
             return index
+
+
+def progress_bar(step, end):
+    percentage = step / end * 100
+    n_completed = ceil(percentage / 10)
+    completed = "=" * n_completed
+    to_complete = " " * (10 - n_completed)
+    sys.stdout.write("\rloading: [{}{}] {}%".format(completed, to_complete, ceil(percentage)))
+
+
+if __name__ == "__main__":
+    import time
+
+    for i in range(189):
+        time.sleep(0.01)
+        progress_bar(i, 189)

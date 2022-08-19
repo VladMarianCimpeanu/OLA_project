@@ -1,7 +1,9 @@
+import sys
+
 import numpy as np
 from Code.environment import settings
 from Code.environment.Customer import Customer
-import Code.utils
+import Code.utils as utils
 from Code.MC_simulator import Simulator
 import json
 import os
@@ -98,6 +100,54 @@ class Environment:
         for index, customer in enumerate(self.customers):
             aggregate_buy = aggregate_buy + np.array(customer.get_buy_distribution()) * self.customers_distribution[
                 index]
+
+    def estimate_clairvoyant(self, precision=10):
+        """
+        This method computes an estimate of the clairvoyant algorithm using MC simulatios.
+        :param precision: integer representing the degree of precision for the estimate: higher is precision, higher is
+        the precision of the estimate.
+        By default it is set to 10. Minimum required is 1.
+        :return: the indexes of the best arms and the expected reward for the clairvoyant algorithm.
+        """
+        assert precision > 0
+        sim = Simulator(self.customers, self.products_graph, self.customers_distribution)
+        best_reward = -1
+        enumerations = self._get_enumerations()
+        best_super_arm = None
+        for iteration, super_arm in enumerate(enumerations):
+            if iteration % 10 == 0:
+                utils.progress_bar(iteration, len(enumerations))
+            rewards = []
+            prices = [self.arms[p][a] for p, a in enumerate(super_arm)]
+            for i in range(precision):
+                rewards.append(sim.run(self.customers_per_day, super_arm).reward(prices))
+            expected_reward = sum(rewards) / len(rewards)
+            if expected_reward > best_reward:
+                best_reward = expected_reward
+                best_super_arm = super_arm
+        return best_super_arm, best_reward
+
+    def _get_enumerations(self, depth=0, indexes=None, combinations=None):
+        """
+        brute force method to enumerate all the possible combinations of arms
+        :param depth: current depth in the search tree. By default it is set to 0 (root of the search tree)
+        :param indexes: list containing the indexes belonging to a single combination. Keep it None.
+        :param combinations: list containing all the combinations found. Keep it None
+        :return: a list containing all the possible combinations.
+        """
+        if indexes is None:
+            indexes = []
+        if combinations is None:
+            combinations = []
+        if depth == len(self.arms):
+            combinations.append(indexes)
+            return combinations
+        new_depth = depth + 1
+        for element in range(len(self.arms[0])):
+            new_indexes = indexes.copy()
+            new_indexes.append(element)
+            combinations = self._get_enumerations(new_depth, new_indexes, combinations)
+        return combinations
 
 
 if __name__ == "__main__":
