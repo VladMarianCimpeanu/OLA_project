@@ -41,6 +41,11 @@ class Simulator:
                     ans += λ * edge_prob * dp(secondary, mask)
 
             ans *= c.get_probability_buy(primary, super_arm[primary])
+            ''''
+            if np.any(np.isnan(ans)):
+                print(ans, primary, super_arm, c.get_probability_buy(primary, super_arm[primary]))
+                print(c.buy_distribution, primary, super_arm[primary])
+            '''
             return ans
 
         ans = 0

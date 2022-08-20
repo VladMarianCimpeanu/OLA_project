@@ -10,7 +10,7 @@ import os
 
 
 class Environment:
-    def __init__(self, customers_behaviour, customers_per_day, variance_customers, p_lambda, products_graph, arms):
+    def __init__(self, customers_behaviour, customers_per_day, variance_customers, p_lambda, products_graph, prices):
         """
         :param customers_behaviour: path file to customers behaviour
         :param customers_per_day:
@@ -24,7 +24,7 @@ class Environment:
         #self.customers_distribution = settings.customers_distribution  # categorical distribution
         self.products_graph = self._init_products_graph(products_graph)
         self.p_lambda = p_lambda
-        self.arms = arms
+        self.prices = prices
         self.simulator = None
         self.customers = [
             Customer(0, 0)]
@@ -78,7 +78,7 @@ class Environment:
         specific product.
         :return: get a np.array containing all the aggregate probability distributions for each product for each arm.
         """
-        current_distribution = np.zeros_like(self.arms)
+        current_distribution = np.zeros_like(self.prices)
         for index, customer in enumerate(self.customers):
             current_distribution = current_distribution + \
                                    np.array(customer.get_num_prods_distribution()) * self.customers_distribution[index]
@@ -89,14 +89,14 @@ class Environment:
         Compute the click graph for aggregate customers.
         :return: an np.array containing the click graph as matrix.
         """
-        aggregate_graph = np.zeros((len(self.arms), len(self.arms)))
+        aggregate_graph = np.zeros((len(self.prices), len(self.prices)))
         for index, customer in enumerate(self.customers):
             aggregate_graph = aggregate_graph + np.array(customer.get_click_graph()) * self.customers_distribution[
                 index]
         return aggregate_graph
 
     def _get_aggregate_buy(self):
-        aggregate_buy = np.zeros_like(self.arms)
+        aggregate_buy = np.zeros_like(self.prices)
         for index, customer in enumerate(self.customers):
             aggregate_buy = aggregate_buy + np.array(customer.get_buy_distribution()) * self.customers_distribution[
                 index]
@@ -106,7 +106,7 @@ class Environment:
         This method computes an estimate of the clairvoyant algorithm using MC simulatios.
         :param precision: integer representing the degree of precision for the estimate: higher is precision, higher is
         the precision of the estimate.
-        By default it is set to 10. Minimum required is 1.
+        By default, it is set to 10. Minimum required is 1.
         :return: the indexes of the best arms and the expected reward for the clairvoyant algorithm.
         """
         assert precision > 0
@@ -118,9 +118,11 @@ class Environment:
             if iteration % 10 == 0:
                 utils.progress_bar(iteration, len(enumerations))
 
-            prices = [self.arms[p][a] for p, a in enumerate(super_arm)]
-            expected_reward = self.customers_per_day * sum([(arm+1)*num for arm, num in zip(super_arm, sim.run_dp(super_arm))])
-            # print(super_arm, expected_reward)
+            prices = [self.prices[p][a] for p, a in enumerate(super_arm)]
+
+            expected_reward = self.customers_per_day * sum([price*num for price, num in zip(prices, sim.run_dp(super_arm))])
+            # mc_reward = np.mean([sim.run(self.customers_per_day, super_arm).reward(prices) for _ in range(10)])
+            # print(super_arm, expected_reward, mc_reward)
             if expected_reward > best_reward:
                 best_reward = expected_reward
                 best_super_arm = super_arm
@@ -138,11 +140,11 @@ class Environment:
             indexes = []
         if combinations is None:
             combinations = []
-        if depth == len(self.arms):
+        if depth == len(self.prices):
             combinations.append(indexes)
             return combinations
         new_depth = depth + 1
-        for element in range(len(self.arms[0])):
+        for element in range(len(self.prices[0])):
             new_indexes = indexes.copy()
             new_indexes.append(element)
             combinations = self._get_enumerations(new_depth, new_indexes, combinations)

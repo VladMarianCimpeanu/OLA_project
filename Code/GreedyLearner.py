@@ -3,8 +3,8 @@ from Code.Learner import Learner
 
 
 class GreedyLearner(Learner):
-    def __init__(self, n_arms, n_products, customer, products_graph, arms):
-        super().__init__(n_arms, n_products, customer, products_graph, arms)
+    def __init__(self, n_arms, n_products, customer, products_graph, prices):
+        super().__init__(n_arms, n_products, customer, products_graph, prices)
         self.expected_rewards = [0] * n_products
         self.arms_selected = [0] * n_products  # start from all lowest price (0)
         self.product_available = [_ for _ in range(n_products)]

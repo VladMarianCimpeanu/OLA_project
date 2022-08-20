@@ -2,10 +2,12 @@ import numpy as np
 from Code.MC_simulator import Simulator
 import json
 import os
+from Code.environment.Customer import Customer
+import copy
 
 
 class Learner:
-    def __init__(self, n_arms, n_products, customer, products_graph, arms):
+    def __init__(self, n_arms, n_products, customer, products_graph, prices):
         """
         :param n_arms: number of arms
         :param n_products: number of products
@@ -15,14 +17,14 @@ class Learner:
         :param products_graph: name of the json file in Code/data with all the relevant information
         about the products graph given by the business unit. The file must contain a key named 'graph', whereas its
         value is the graph in matrix form.
-        :param arms: arms of the learner. Matrix whose rows are the products whereas the columns are the prices
+        :param prices: arms of the learner. Matrix whose rows are the products whereas the columns are the prices
         """
         self.n_arms = n_arms
-        self.arms = arms
         self.n_products = n_products
         self.t = 0
-        self.customer = customer
+        self.customer = Customer(0, 0)
         self.pulled = []
+        self.prices = prices
         # load products graph
         self.graph = self._load_products(products_graph)
         self.super_arms = self._get_enumerations()
@@ -48,7 +50,7 @@ class Learner:
         :return: None
         """
         self.t += 1
-        prices = [self.arms[p][a] for p, a in enumerate(pulled_arm)]
+        prices = [self.prices[p][a] for p, a in enumerate(pulled_arm)]
         self.history_rewards.append(report.reward(prices))
         self.pulled.append(pulled_arm.copy())
 
@@ -62,12 +64,11 @@ class Learner:
         conversion_rates = np.clip(conversion_rates, 0, 1)
         self.customer.set_probability_buy(conversion_rates)
         simulation = Simulator([self.customer], self.graph, [1])
-        maximum_estimate = -1  # assuming that a reward is a non negative number.
+        maximum_estimate = -1  # assuming that a reward is a non-negative number.
         best_super_arm = None
         for super_arm in self.super_arms:
-            # outcome = simulation.run(rounds, super_arm)
-            # reward = outcome.reward(super_arm)
-            reward = rounds * sum([(arm+1)*num for arm, num in zip(super_arm, simulation.run_dp(super_arm))])
+            prices = [self.prices[p][a] for p, a in enumerate(super_arm)]
+            reward = rounds * sum([price*num for price, num in zip(prices, simulation.run_dp(super_arm))])
             if reward > maximum_estimate:
                 maximum_estimate = reward
                 best_super_arm = super_arm

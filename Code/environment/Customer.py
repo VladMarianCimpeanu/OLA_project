@@ -27,13 +27,13 @@ class Customer:
             json_data = json_data[0]
 
         if alpha is None:
-            alpha = json_data['alpha']
+            alpha = np.array(json_data['alpha'])
         if num_prods_distribution is None:
-            num_prods_distribution = json_data['num_prods_distribution']
+            num_prods_distribution = np.array(json_data['num_prods_distribution'])
         if click_graph is None:
-            click_graph = json_data['click_graph']
+            click_graph = np.array(json_data['click_graph'])
         if buy_distribution is None:
-            buy_distribution = json_data['buy_distribution']
+            buy_distribution = np.array(json_data['buy_distribution'])
 
         self.alpha = alpha
         self.num_prods_distributions = num_prods_distribution
@@ -66,11 +66,10 @@ class Customer:
         return self.num_prods_distributions
 
     def get_num_prods(self, product, price):
-        return 1
-        #return np.random.geometric(self.num_prods_distributions[product][price])
+        return np.random.geometric(self.num_prods_distributions[product][price])
 
     def get_buy_distribution(self):
-        return self.buy_distribution
+        return self.buy_distribution.copy()
 
     def set_probability_click(self, click_graph):
         self.click_graph = click_graph

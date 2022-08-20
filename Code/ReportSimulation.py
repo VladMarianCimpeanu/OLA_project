@@ -88,12 +88,11 @@ class ReportSimulation:
                 for primary in range(self.n_products)
                 ]
 
-    def reward(self, pulled_arms):
+    def reward(self, prices):
         """
         Compute the total reward achieved during the simulation
-        :param pulled_arms: list containing the prices for each product.
+        :param prices: list containing the prices for each product.
         :return: return a floating point representing the total reward achieved during the simulation.
         """
-        assert len(pulled_arms) == len(self.counter_num_bought)
-        # TODO: arm+1 ?? discuss
-        return sum([(arm+1)*num for arm, num in zip(pulled_arms, self.counter_num_bought)])
+        assert len(prices) == len(self.counter_num_bought)
+        return sum([price * num for price, num in zip(prices, self.counter_num_bought)])
