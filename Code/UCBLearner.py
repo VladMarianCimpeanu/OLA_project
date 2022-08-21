@@ -21,14 +21,15 @@ class UCBLearner(Learner):
         """
         self.update_observations(pulled_arm, report)  # method of superclass
         seen = np.array(report.get_seen())
-        bought = report.get_bought()
+        bought = np.array(report.get_bought())
         # update counter of samples seen
         tot_seen = np.copy(self.seen)
         for product, arm in enumerate(pulled_arm):
             tot_seen[product, arm] = tot_seen[product, arm] + seen[product]
         # update means
         for product, arm in enumerate(pulled_arm):
-            self.means[product, arm] = (self.means[product, arm] * self.seen[product, arm] + bought[product]) / (tot_seen[product, arm])
+            if tot_seen[product, arm] > 0:
+                self.means[product, arm] = (self.means[product, arm] * self.seen[product, arm] + bought[product]) / (tot_seen[product, arm])
         self.seen = tot_seen
         # update upper bounds
         for product in range(self.n_products):
