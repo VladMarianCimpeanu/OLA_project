@@ -26,9 +26,11 @@ class Learner:
         self.pulled = []
         self.prices = prices
         # load products graph
+        self.products_graph = products_graph
         self.graph = self._load_products(products_graph)
         self.super_arms = self._get_enumerations()
         self.history_rewards = []
+        self.history_expected = []
 
     @classmethod
     def _load_products(cls, name):
@@ -38,10 +40,11 @@ class Learner:
         return data['graph']
 
     def reset(self):
-        self.__init__(self.n_arms, self.t)
-
-    def act(self):
-        pass
+        """
+        reset the learner to the initial state.
+        :return: None
+        """
+        self.__init__(self.n_arms, self.n_products, self.customer, self.products_graph, self.arms)
 
     def update_observations(self, pulled_arm, report):
         """
@@ -52,6 +55,7 @@ class Learner:
         self.t += 1
         prices = [self.prices[p][a] for p, a in enumerate(pulled_arm)]
         self.history_rewards.append(report.reward(prices))
+        self.history_expected.append(report.expected_reward(prices))
         self.pulled.append(pulled_arm.copy())
 
     def select_superarm(self, rounds=50):
@@ -105,9 +109,31 @@ class Learner:
         return np.array([])
 
     def get_all_pulled(self):
+        """
+        Return all the pulled arms by the learner.
+        :return: a list whose elements are super arms pulled by the learner. A super arm is a list and its i-th element
+        is the index of the arm pulled for the i-th product.
+        """
         return self.pulled
 
     def get_last_pulled(self):
+        """
+        Return the last super arm pulled by the learner.
+        :return:  A super arm is a list and its i-th element
+        is the index of the arm pulled for the i-th product.
+        """
         return self.pulled[-1]
 
+    def get_expected_rewards(self):
+        """
+        Return the average reward per day
+        :return: a list whose elements are the reward average for a specific day.
+        """
+        return self.history_expected
 
+    def get_daily_rewards(self):
+        """
+        Return the rewards per day
+        :return: a list containing the cumulative reward per day
+        """
+        return self.history_rewards

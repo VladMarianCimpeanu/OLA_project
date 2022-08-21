@@ -8,7 +8,7 @@ class TSLearner(Learner):
         self.beta_parameters = np.ones((n_products, n_arms, 2))
 
     def estimate_conversion_rates(self):
-        return np.random.beta(self.beta_parameters[:, :, 0], self.beta_parameters[:, :, 1])
+        return np.random.beta(a=self.beta_parameters[:, :, 0], b=self.beta_parameters[:, :, 1])
 
     def update(self, pulled_arm, report):
         """
@@ -26,4 +26,11 @@ class TSLearner(Learner):
             self.beta_parameters[index, arm, 0] = self.beta_parameters[index, arm, 0] + bought[index]
             self.beta_parameters[index, arm, 1] = self.beta_parameters[index, arm, 1] + seen[index] - bought[index]
 
+    def get_betas(self, prod, arm):
+        return self.beta_parameters[prod, arm, :]
 
+
+if __name__ == "__main__":
+    betas = np.ones((3, 4, 2))
+    betas[0, 0, 1] = betas[0, 0, 1] + 2
+    print(betas)

@@ -32,7 +32,7 @@ class UCBLearner(Learner):
         self.seen = tot_seen
         # update upper bounds
         for product in range(self.n_products):
+            tot_samples = np.sum(self.seen[product])
             for arm in range(self.n_arms):
                 if self.seen[product, arm] != 0:
-                    tot_samples = np.sum(self.seen[product])
-                    self.upper_bounds[product, arm] = np.sqrt(2 * self.means[product, arm] * np.log(self.seen[product, arm]) / tot_samples)
+                    self.upper_bounds[product, arm] = np.sqrt(2 * np.log(tot_samples) / self.seen[product, arm])

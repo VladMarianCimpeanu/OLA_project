@@ -82,6 +82,7 @@ class ReportSimulation:
         return self.counter_num_bought
 
     def get_graph(self):
+        # TODO: this does not consider if the customer has seen or not the secondary product. DISCUSS
         return [[self.graph[primary][secondary] / self.counter_seen[primary]
                  for secondary in range(self.n_products)
                  ]
@@ -96,3 +97,7 @@ class ReportSimulation:
         """
         assert len(prices) == len(self.counter_num_bought)
         return sum([price * num for price, num in zip(prices, self.counter_num_bought)])
+
+    def expected_reward(self, prices):
+        num_customers = sum(self.counter_starts)
+        return self.reward(prices) / num_customers

@@ -107,11 +107,13 @@ class Environment:
         :param precision: integer representing the degree of precision for the estimate: higher is precision, higher is
         the precision of the estimate.
         By default, it is set to 10. Minimum required is 1.
-        :return: the indexes of the best arms and the expected reward for the clairvoyant algorithm.
+        :return: the indexes of the best arm, the daily expected reward and the expected reward per customer
+         for the clairvoyant algorithm.
         """
         assert precision > 0
         sim = Simulator(self.customers, self.products_graph, self.customers_distribution)
         best_reward = -1
+        best_expected_reward = -1
         enumerations = self._get_enumerations()
         best_super_arm = None
         for iteration, super_arm in enumerate(enumerations):
@@ -125,8 +127,9 @@ class Environment:
             # print(super_arm, expected_reward, mc_reward)
             if expected_reward > best_reward:
                 best_reward = expected_reward
+                best_expected_reward = expected_reward / self.customers_per_day
                 best_super_arm = super_arm
-        return best_super_arm, best_reward
+        return best_super_arm, best_reward, best_expected_reward
 
     def _get_enumerations(self, depth=0, indexes=None, combinations=None):
         """

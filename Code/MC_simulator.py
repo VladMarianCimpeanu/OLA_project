@@ -58,7 +58,7 @@ class Simulator:
         """
         run simulation for a single customer. Stops when the customer sees all the products as primary, or he decides
         not to buy any product.
-        :param c:
+        :param c: customer instance
         :param super_arm:
         :param report:
         """
