@@ -1,6 +1,6 @@
 import numpy as np
-from Code.Learner import Learner
 from Code.TSLearner import TSLearner
+
 
 class TSLearner5(TSLearner):
     def __init__(self, n_arms, n_products, customer, products_graph, prices):

@@ -10,7 +10,7 @@ class ReportSimulation:
         self.counter_seen = [0] * n_products
         self.counter_items_bought = [0] * n_products
         self.counter_num_bought = [0] * n_products
-        self.graph = [[0] * n_products] * n_products
+        self.graph = [[0] * n_products for _ in range(n_products)]
         self.counter_starts = [0] * n_products
         self.debug = debug
 
