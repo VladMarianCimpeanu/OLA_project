@@ -12,6 +12,7 @@ class UCBLearner4(UCBLearner):
 
 
     def update(self, pulled_arm, report):
+        print("customer alpha:", self.customer.get_distribution_alpha()) # TODO at first iteration it is set with the values in json file
         super().update(pulled_arm, report)
         self.estimated_alphas = self.estimated_alphas + np.array(report.get_starts())
         self.customer.set_distribution_alpha(self.estimated_alphas / sum(self.estimated_alphas))
@@ -26,10 +27,11 @@ class UCBLearner4(UCBLearner):
             if self.estimated_n_items[p,a] > 0:
                 self.mean_items[p,a] = (self.mean_items[p,a] * seen[p,a] + bought[p]) / (self.estimated_n_items[p,a])
 
-        print("n_bought: ", self.estimated_n_bought)
-        print("n_items: " ,self.estimated_n_items)
-        print("mean: " , self.mean_items)
-        self.customer.set_num_prods(1 / self.mean_items)
+        #print("mean: " , self.mean_items)
+        new_mean = self.mean_items.copy()
+        new_mean[new_mean>0] = 1 / new_mean[new_mean>0]
+        #print("inverted mean: ", new_mean)
+        self.customer.set_num_prods(new_mean)
 
 
         

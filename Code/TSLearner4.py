@@ -25,4 +25,8 @@ class TSLearner4(TSLearner):
             if self.estimated_n_items[p,a] > 0:
                 self.mean_items[p,a] = (self.mean_items[p,a] * seen[p,a] + bought[p]) / (self.estimated_n_items[p,a])
 
-        self.customer.set_num_prods(1 / self.mean_items)
+        #print("mean: " , self.mean_items)
+        new_mean = self.mean_items.copy()
+        new_mean[new_mean>0] = 1 / new_mean[new_mean>0]
+        #print("inverted mean: ", new_mean)
+        self.customer.set_num_prods(new_mean)

@@ -76,10 +76,15 @@ class ReportSimulation:
         return self.counter_seen
 
     def get_bought(self):
+        #return the number of times each item has been bought
         return self.counter_items_bought
 
     def get_amount_bought(self):
+        #return the total amount of items bought
         return self.counter_num_bought
+
+    def get_clicks(self):
+        return self.graph
 
     def get_graph(self):
         # TODO: this does not consider if the customer has seen or not the secondary product. DISCUSS
@@ -88,6 +93,7 @@ class ReportSimulation:
                  ]
                 for primary in range(self.n_products)
                 ]
+
 
     def reward(self, prices):
         """
