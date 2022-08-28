@@ -1,3 +1,23 @@
 .venv/
 .idea/
 *.pyc
+
+
+# LaTex
+*.fdb_latexmk
+*.aux
+*.bbl
+*.blg
+*.lof
+*.log
+*.lot
+*.out
+*.toc
+*.nav
+*.snm
+*.synctex.gz
+*.fls
+
+
+# Mac
+.DS_Store
