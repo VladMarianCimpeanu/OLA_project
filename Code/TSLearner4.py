@@ -1,0 +1,28 @@
+import numpy as np
+from Code.Learner import Learner
+from Code.TSLearner import TSLearner
+
+class TSLearner4(TSLearner):
+    def __init__(self, n_arms, n_products, customer, products_graph, prices):
+        super().__init__(n_arms, n_products, customer, products_graph, prices)
+        self.estimated_alphas = np.zeros(n_products)
+        self.estimated_n_items = np.zeros((n_products,n_arms))
+        self.estimated_n_bought = np.zeros((n_products,n_arms))
+        self.mean_items = np.zeros((n_products,n_arms))
+
+
+    def update(self, pulled_arm, report):
+        super().update(pulled_arm, report)
+        self.estimated_alphas = self.estimated_alphas + np.array(report.get_starts())
+        self.customer.set_distribution_alpha(self.estimated_alphas / sum(self.estimated_alphas))
+        
+        seen = self.estimated_n_items.copy() #old quantity
+        bought = report.get_amount_bought()
+        for p, a in enumerate(pulled_arm):
+            self.estimated_n_items[p,a] += report.get_bought()[p] #new quantity
+            self.estimated_n_bought[p,a] += report.get_amount_bought()[p]
+
+            if self.estimated_n_items[p,a] > 0:
+                self.mean_items[p,a] = (self.mean_items[p,a] * seen[p,a] + bought[p]) / (self.estimated_n_items[p,a])
+
+        self.customer.set_num_prods(1 / self.mean_items)
