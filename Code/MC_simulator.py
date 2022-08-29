@@ -88,6 +88,11 @@ class Simulator:
 
     @staticmethod
     def _choose_primary(customer):
+        """
+        select the primary product based on the alpha paramether of the specific customer and then return the index of the chosen product
+        :param customer: user interacting
+        :return : index of selected product
+        """
         distribution_alpha = customer.get_distribution_alpha()
         alphas = np.random.dirichlet(distribution_alpha)
         return sample_categorical_distribution(alphas)

@@ -8,8 +8,8 @@ class ReportSimulation:
     def __init__(self, n_products, debug=False):
         self.n_products = n_products
         self.counter_seen = [0] * n_products
-        self.counter_items_bought = [0] * n_products
-        self.counter_num_bought = [0] * n_products
+        self.counter_items_bought = [0] * n_products #number of times an item has been bought
+        self.counter_num_bought = [0] * n_products #quantity oh each item bought
         self.graph = [[0] * n_products for _ in range(n_products)]
         self.counter_starts = [0] * n_products
         self.debug = debug
@@ -65,6 +65,19 @@ class ReportSimulation:
             logging.info(f"bought: {primary} {secondary}")
         self.graph[primary][secondary] += 1
 
+    def reward(self, prices):
+        """
+        Compute the total reward achieved during the simulation
+        :param prices: list containing the prices for each product.
+        :return: return a floating point representing the total reward achieved during the simulation.
+        """
+        assert len(prices) == len(self.counter_num_bought)
+        return sum([price * num for price, num in zip(prices, self.counter_num_bought)])
+
+    def expected_reward(self, prices):
+        num_customers = sum(self.counter_starts)
+        return self.reward(prices) / num_customers
+
     def get_conversion_rate(self):
         """
         Compute the conversion rates.
@@ -95,15 +108,4 @@ class ReportSimulation:
                 ]
 
 
-    def reward(self, prices):
-        """
-        Compute the total reward achieved during the simulation
-        :param prices: list containing the prices for each product.
-        :return: return a floating point representing the total reward achieved during the simulation.
-        """
-        assert len(prices) == len(self.counter_num_bought)
-        return sum([price * num for price, num in zip(prices, self.counter_num_bought)])
-
-    def expected_reward(self, prices):
-        num_customers = sum(self.counter_starts)
-        return self.reward(prices) / num_customers
+    
