@@ -20,17 +20,17 @@ class Environment:
         self.customers_behaviour = customers_behaviour
         self.customers_per_day = customers_per_day
         self.variance_customers = variance_customers
-        self.customers_distribution = [1]
-        #self.customers_distribution = settings.customers_distribution  # categorical distribution
+        #self.customers_distribution = [1]
+        self.customers_distribution = settings.customers_distribution  # categorical distribution
         self.products_graph = self._init_products_graph(products_graph)
         self.p_lambda = p_lambda
         self.prices = prices
         self.simulator = None
         self.customers = [
-            Customer(0, 0)]
- #           Customer(0, 1),
- #           Customer(1, 0),
- #           Customer(1, 1)
+            Customer(0, 0),
+            Customer(0, 1),
+            Customer(1, 0),
+            Customer(1, 1)]
 
     @classmethod
     def _init_products_graph(cls, name):
@@ -111,6 +111,9 @@ class Environment:
          for the clairvoyant algorithm.
         """
         assert precision > 0
+
+        reward_per_arm = {}
+
         sim = Simulator(self.customers, self.products_graph, self.customers_distribution)
         best_reward = -1
         best_expected_reward = -1
@@ -123,13 +126,15 @@ class Environment:
             prices = [self.prices[p][a] for p, a in enumerate(super_arm)]
 
             expected_reward = self.customers_per_day * sum([price*num for price, num in zip(prices, sim.run_dp(super_arm))])
+
+            reward_per_arm[tuple(super_arm)] = expected_reward
             # mc_reward = np.mean([sim.run(self.customers_per_day, super_arm).reward(prices) for _ in range(10)])
             # print(super_arm, expected_reward, mc_reward)
             if expected_reward > best_reward:
                 best_reward = expected_reward
                 best_expected_reward = expected_reward / self.customers_per_day
                 best_super_arm = super_arm
-        return best_super_arm, best_reward, best_expected_reward
+        return best_super_arm, best_reward, best_expected_reward, reward_per_arm
 
     def _get_enumerations(self, depth=0, indexes=None, combinations=None):
         """
