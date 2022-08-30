@@ -4,7 +4,6 @@ import os
 
 
 DATA_PATH = "{}/../data/customer_classes.json".format(os.path.dirname(os.path.abspath(__file__)))
-JSON_DATA = json.load(open(DATA_PATH, 'r'))['classes']
 
 
 class Customer:
@@ -19,9 +18,13 @@ class Customer:
     """
 
     def __init__(self, feature_1, feature_2, alpha=None, num_prods_distribution=None, click_graph=None,
-                 buy_distribution=None):
+                 buy_distribution=None, file_name=None):
         self.feature_1 = feature_1
         self.feature_2 = feature_2
+        if file_name is None:
+            JSON_DATA = json.load(open(DATA_PATH, 'r'))['classes']
+        else:
+            JSON_DATA = json.load(open(file_name, 'r'))['classes']
         json_data = [w for w in JSON_DATA if w['features'] == [self.feature_1, self.feature_2]]
         if len(json_data) == 1:
             json_data = json_data[0]

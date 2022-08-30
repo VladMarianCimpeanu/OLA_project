@@ -20,7 +20,6 @@ class Environment:
         self.customers_behaviour = customers_behaviour
         self.customers_per_day = customers_per_day
         self.variance_customers = variance_customers
-        #self.customers_distribution = [1]
         self.customers_distribution = settings.customers_distribution  # categorical distribution
         self.products_graph = self._init_products_graph(products_graph)
         self.p_lambda = p_lambda
