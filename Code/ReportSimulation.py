@@ -83,7 +83,13 @@ class ReportSimulation:
         Compute the conversion rates.
         :return: list containing conversion rates in the last simulation.
         """
-        return [bought / seen for bought, seen in zip(self.counter_items_bought, self.counter_seen)]
+        conv_rate = []
+        for bought, seen in zip(self.counter_items_bought, self.counter_seen):
+            if seen > 0:
+                conv_rate.append(bought / seen)
+            else:
+                conv_rate.append(0)
+        return conv_rate
 
     def get_seen(self):
         return self.counter_seen

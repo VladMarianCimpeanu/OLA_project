@@ -20,10 +20,13 @@ class EnvironmentNonStationary(Environment):
         ]
         self.t = 0
         self.phase = 0
+        self.n_phase = len(self.customers_ns[0].get_buy_distribution())
 
 
     def round(self, pulled_arm):
         phase = self.t // self.abrupt_change_interval
+        if phase > self.n_phase-1:
+            phase = self.n_phase-1
         if self.simulator is None or phase != self.phase:
             self.customers = []
             for c in self.customers_ns:
