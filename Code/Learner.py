@@ -22,7 +22,7 @@ class Learner:
         self.n_arms = n_arms
         self.n_products = n_products
         self.t = 0
-        self.customer = Customer(0, 0)
+        self.customer = customer
         self.pulled = []
         self.prices = prices
         # load products graph

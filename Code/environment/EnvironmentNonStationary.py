@@ -36,3 +36,32 @@ class EnvironmentNonStationary(Environment):
             self.phase = phase
             self.simulator = Simulator(self.customers, self.products_graph, self.customers_distribution)
         return super().round(pulled_arm)
+
+    def get_actual_conv_rate(self):
+        phase = self.t // self.abrupt_change_interval
+        if phase > self.n_phase-1:
+            phase = self.n_phase-1
+        actual_conv_rates = []
+        for c in self.customers_ns:
+            actual_conv_rates.append(c.get_buy_distribution()[phase])
+        return actual_conv_rates
+
+
+    def estimate_clairvoyant(self, precision=10):
+        best_super_arm = []
+        best_reward = []
+        best_expected_reward = []
+        reward_per_arm = []
+        for phase in range(len(self.customers_ns[0].get_buy_distribution())):
+            self.customers = []
+            for c in self.customers_ns:
+                self.customers.append(
+                    Customer(c.feature_1, c.feature_2, buy_distribution=c.get_buy_distribution()[phase])
+                )
+            a, b, c, d = super().estimate_clairvoyant(precision)
+            best_super_arm.append(a)
+            best_reward.append(b)
+            best_expected_reward.append(c)
+            reward_per_arm.append(d)
+        return best_super_arm, best_reward, best_expected_reward, reward_per_arm
+

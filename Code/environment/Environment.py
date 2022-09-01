@@ -99,6 +99,7 @@ class Environment:
         for index, customer in enumerate(self.customers):
             aggregate_buy = aggregate_buy + np.array(customer.get_buy_distribution()) * self.customers_distribution[
                 index]
+        return aggregate_buy
 
     def estimate_clairvoyant(self, precision=10):
         """

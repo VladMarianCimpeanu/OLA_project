@@ -27,9 +27,7 @@ class UCBLearnerActive(UCBLearner):
     def change_detection_test(self, pulled_arm, report):
         conv_rate = report.get_conversion_rate()
         for product, arm in enumerate(pulled_arm):
-            print("conv_rate: ", self.conv_rate_history[product][arm])
-            print("conv rate:", conv_rate)
-            delta = 0.5
+            delta = 0.3
             if (conv_rate[product] < self.means[product, arm] - delta or conv_rate[product] > self.means[product, arm] + delta) and not np.isinf(self.upper_bounds[product,arm]):
                 #detected an abruth change
                 print("abrupt change")
