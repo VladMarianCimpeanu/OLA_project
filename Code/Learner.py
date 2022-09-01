@@ -64,6 +64,8 @@ class Learner:
         :param rounds: number of simulations that must be run for each combinations of arms
         :return: a list containing the indexes of the best arms for each product according to the MC simulation.
         """
+        rewards_per_arms = {}
+
         conversion_rates = self.estimate_conversion_rates()
         conversion_rates = np.clip(conversion_rates, 0, 1)
         self.customer.set_probability_buy(conversion_rates)
@@ -73,9 +75,12 @@ class Learner:
         for super_arm in self.super_arms:
             prices = [self.prices[p][a] for p, a in enumerate(super_arm)]
             reward = rounds * sum([price*num for price, num in zip(prices, simulation.run_dp(super_arm))])
+            rewards_per_arms[tuple(super_arm)] = reward
             if reward > maximum_estimate:
                 maximum_estimate = reward
                 best_super_arm = super_arm
+        self.rewards_per_arms = rewards_per_arms
+        assert best_super_arm is not None
         return best_super_arm
 
     def _get_enumerations(self, depth=0, indexes=None, combinations=None):
