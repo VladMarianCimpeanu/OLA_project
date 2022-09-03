@@ -28,13 +28,28 @@ class UCBLearnerActive(UCBLearner):
         conv_rate = report.get_conversion_rate()
         for product, arm in enumerate(pulled_arm):
             delta = 0.3
-            if (conv_rate[product] < self.means[product, arm] - delta or conv_rate[product] > self.means[product, arm] + delta) and not np.isinf(self.upper_bounds[product,arm]):
+            #print("t learner: ", self.t)
+            if (conv_rate[product] < self.means[product, arm] - delta or conv_rate[product] > self.means[product, arm] + delta) and not np.isinf(self.upper_bounds[product,arm]) and self.t>35:
                 #detected an abruth change
                 print("abrupt change")
-                self.means[product, arm] = 0
-                self.upper_bounds[product, arm] = np.inf
-                self.seen[product, arm] = 0
-                self.conv_rate_history[product][arm] = []
+                self.t = 0
+
+                #method1
+                #self.means[product, arm] = 0
+                #self.upper_bounds[product, arm] = np.inf
+                #self.seen[product, arm] = 0
+                #self.conv_rate_history[product][arm] = []
+
+                #method2
+                self.means = np.zeros((self.n_products, self.n_arms))
+                self.upper_bounds = np.full((self.n_products, self.n_arms), np.inf)
+                self.seen = np.zeros((self.n_products, self.n_arms))
+                self.conv_rate_history = []
+                for i in range(self.n_products):
+                    temp_array = []
+                    for j in range(self.n_arms):
+                        temp_array.append([])
+                    self.conv_rate_history.append(temp_array)
             self.conv_rate_history[product][arm].append(conv_rate[product])
             
 

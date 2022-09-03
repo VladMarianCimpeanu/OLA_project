@@ -3,7 +3,7 @@ from Code.UCBLearner import UCBLearner
 
 
 class UCBLearnerSlidingWindow(UCBLearner):
-    def __init__(self, n_arms, n_products, customer, products_graph, prices, window_size=10):
+    def __init__(self, n_arms, n_products, customer, products_graph, prices, window_size=30):
         super().__init__(n_arms, n_products, customer, products_graph, prices)
         self.reports = []
         self.window_size = window_size
