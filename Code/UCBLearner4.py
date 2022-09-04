@@ -3,8 +3,8 @@ from Code.Learner import Learner
 from Code.UCBLearner import UCBLearner
 
 class UCBLearner4(UCBLearner):
-    def __init__(self, n_arms, n_products, customer, products_graph, prices):
-        super().__init__(n_arms, n_products, customer, products_graph, prices)
+    def __init__(self, n_arms, n_products, customers, products_graph, prices, customers_distribution):
+        super().__init__(n_arms, n_products, customers, products_graph, prices, customers_distribution)
         self.estimated_alphas = np.zeros(n_products)
         self.estimated_n_items = np.zeros((n_products,n_arms))
         self.estimated_n_bought = np.zeros((n_products,n_arms))
@@ -12,10 +12,11 @@ class UCBLearner4(UCBLearner):
 
 
     def update(self, pulled_arm, report):
-        print("customer alpha:", self.customer.get_distribution_alpha()) # TODO at first iteration it is set with the values in json file
+        print("customer alpha:", self.customers[0].get_distribution_alpha()) # TODO at first iteration it is set with the values in json file
         super().update(pulled_arm, report)
         self.estimated_alphas = self.estimated_alphas + np.array(report.get_starts())
-        self.customer.set_distribution_alpha(self.estimated_alphas / sum(self.estimated_alphas))
+        for customer in self.customers:
+            customer.set_distribution_alpha(self.estimated_alphas / sum(self.estimated_alphas))
 
         seen = self.estimated_n_items.copy() #old quantity
         bought = report.get_amount_bought()
@@ -31,7 +32,9 @@ class UCBLearner4(UCBLearner):
         new_mean = self.mean_items.copy()
         new_mean[new_mean>0] = 1 / new_mean[new_mean>0]
         #print("inverted mean: ", new_mean)
-        self.customer.set_num_prods(new_mean)
+
+        for customer in self.customers:
+            customer.set_num_prods(new_mean)
 
 
         

@@ -33,29 +33,30 @@ class Simulator:
         return report
 
     def run_dp(self, super_arm):
-        @lru_cache(maxsize=None)
-        def dp(primary, mask):
-            mask |= 1 << primary
-            ans = np.zeros(5)
-
-            # expected amount of items bought
-            ans[primary] = 1 / c.num_prods_distributions[primary][super_arm[primary]]
-
-            click_prob = [c.get_probability_click(primary, secondary) for secondary in self.products_graph[primary]]
-            for secondary, edge_prob, λ in zip(self.products_graph[primary], click_prob, λ_SLOTS):
-                if (mask & (1 << secondary)) == 0:
-                    ans += λ * edge_prob * dp(secondary, mask)
-
-            ans *= c.get_probability_buy(primary, super_arm[primary])
-            ''''
-            if np.any(np.isnan(ans)):
-                print(ans, primary, super_arm, c.get_probability_buy(primary, super_arm[primary]))
-                print(c.buy_distribution, primary, super_arm[primary])
-            '''
-            return ans
 
         ans = 0
         for c, p in zip(self.customers, self.customers_distribution):
+            @lru_cache(maxsize=None)
+            def dp(primary, mask):
+                mask |= 1 << primary
+                ans = np.zeros(5)
+
+                # expected amount of items bought
+                ans[primary] = 1 / c.num_prods_distributions[primary][super_arm[primary]]
+
+                click_prob = [c.get_probability_click(primary, secondary) for secondary in self.products_graph[primary]]
+                for secondary, edge_prob, λ in zip(self.products_graph[primary], click_prob, λ_SLOTS):
+                    if (mask & (1 << secondary)) == 0:
+                        ans += λ * edge_prob * dp(secondary, mask)
+
+                ans *= c.get_probability_buy(primary, super_arm[primary])
+                ''''
+                if np.any(np.isnan(ans)):
+                    print(ans, primary, super_arm, c.get_probability_buy(primary, super_arm[primary]))
+                    print(c.buy_distribution, primary, super_arm[primary])
+                '''
+                return ans
+
             for primary, alpha in enumerate(c.get_distribution_alpha()):
                 ans += p * alpha * dp(primary, 0)
         return ans

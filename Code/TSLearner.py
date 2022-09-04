@@ -3,8 +3,8 @@ from Code.Learner import Learner
 
 
 class TSLearner(Learner):
-    def __init__(self, n_arms, n_products, customer, products_graph, prices):
-        super().__init__(n_arms, n_products, customer, products_graph, prices)
+    def __init__(self, n_arms, n_products, customers, products_graph, prices, customers_distribution):
+        super().__init__(n_arms, n_products, customers, products_graph, prices, customers_distribution)
         self.beta_parameters = np.ones((n_products, n_arms, 2))
 
     def estimate_conversion_rates(self):

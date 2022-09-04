@@ -8,8 +8,8 @@ class UCBLearnerActive(UCBLearner):
     this class works in a non stationarity environment with an ACTIVE approach of select when to forget the old data. 
     To detect the abrupt change we each time look at the variance of the convertion_rate---> if the change is bigger it found an abruth change
     """
-    def __init__(self, n_arms, n_products, customer, products_graph, prices):
-        super().__init__(n_arms, n_products, customer, products_graph, prices)
+    def __init__(self, n_arms, n_products, customers, products_graph, prices, customers_distribution):
+        super().__init__(n_arms, n_products, customers, products_graph, prices, customers_distribution)
         self.conv_rate_history = []
         for i in range(n_products):
             temp_array = []

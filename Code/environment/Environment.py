@@ -126,10 +126,15 @@ class Environment:
             prices = [self.prices[p][a] for p, a in enumerate(super_arm)]
 
             expected_reward = self.customers_per_day * sum([price*num for price, num in zip(prices, sim.run_dp(super_arm))])
+            '''
+            mc = [sim.run(self.customers_per_day, super_arm).reward(prices) for _ in range(precision)]
+            mc_reward = np.mean(mc)
+            mc_std = np.std(mc)
+            print(f'{super_arm}: {expected_reward} - {mc_reward} +- {mc_std}')
+            '''
 
             reward_per_arm[tuple(super_arm)] = expected_reward
-            # mc_reward = np.mean([sim.run(self.customers_per_day, super_arm).reward(prices) for _ in range(10)])
-            # print(super_arm, expected_reward, mc_reward)
+
             if expected_reward > best_reward:
                 best_reward = expected_reward
                 best_expected_reward = expected_reward / self.customers_per_day

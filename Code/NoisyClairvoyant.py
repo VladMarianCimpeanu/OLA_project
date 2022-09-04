@@ -3,8 +3,8 @@ import numpy as np
 
 
 class NoisyClairvoyant(Learner):
-    def __init__(self, n_arms, n_products, customer, products_graph, prices, conversion_rates, std_noise=0.0):
-        super().__init__(n_arms, n_products, customer, products_graph, prices)
+    def __init__(self, n_arms, n_products, customers, products_graph, prices, customers_distribution, conversion_rates, std_noise=0.0):
+        super().__init__(n_arms, n_products, customers, products_graph, prices, customers_distribution)
         self.conversion_rates = conversion_rates
         self.std_noise = std_noise
 

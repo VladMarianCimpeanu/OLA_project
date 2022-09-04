@@ -3,8 +3,8 @@ from Code.Learner import Learner
 
 
 class UCBLearner(Learner):
-    def __init__(self, n_arms, n_products, customer, products_graph, prices):
-        super().__init__(n_arms, n_products, customer, products_graph, prices)
+    def __init__(self, n_arms, n_products, customers, products_graph, prices, customers_distribution):
+        super().__init__(n_arms, n_products, customers, products_graph, prices, customers_distribution)
         self.means = np.zeros((n_products, n_arms))
         self.upper_bounds = np.full((n_products, n_arms), np.inf)
         self.seen = np.zeros((n_products, n_arms))

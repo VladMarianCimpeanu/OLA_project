@@ -4,10 +4,17 @@ import json
 import os
 from Code.environment.Customer import Customer
 import copy
+from multiprocessing import Pool
+
+
+def evaluate_superarm(params):
+    simulation, prices, super_arm = params
+    prices = [prices[p][a] for p, a in enumerate(super_arm)]
+    return sum([price * num for price, num in zip(prices, simulation.run_dp(super_arm))])
 
 
 class Learner:
-    def __init__(self, n_arms, n_products, customer, products_graph, prices):
+    def __init__(self, n_arms, n_products, customers, products_graph, prices, customers_distribution):
         """
         :param n_arms: number of arms
         :param n_products: number of products
@@ -21,10 +28,11 @@ class Learner:
         """
         self.n_arms = n_arms
         self.n_products = n_products
-        self.t = 0
-        self.customer = customer
+        self.customers = copy.deepcopy(customers)
+        self.customers_distribution = copy.deepcopy(customers_distribution)
+        self.prices = copy.deepcopy(prices)
         self.pulled = []
-        self.prices = prices
+        self.t = 0
         # load products graph
         self.products_graph = products_graph
         self.graph = self._load_products(products_graph)
@@ -44,7 +52,8 @@ class Learner:
         reset the learner to the initial state.
         :return: None
         """
-        self.__init__(self.n_arms, self.n_products, self.customer, self.products_graph, self.arms)
+        self.__init__(self.n_arms, self.n_products, self.customers, self.products_graph, self.arms,
+                      self.customers_distribution)
 
     def update_observations(self, pulled_arm, report):
         """
@@ -64,23 +73,19 @@ class Learner:
         :param rounds: number of simulations that must be run for each combinations of arms
         :return: a list containing the indexes of the best arms for each product according to the MC simulation.
         """
-        rewards_per_arms = {}
 
         conversion_rates = self.estimate_conversion_rates()
         conversion_rates = np.clip(conversion_rates, 0, 1)
-        self.customer.set_probability_buy(conversion_rates)
-        simulation = Simulator([self.customer], self.graph, [1])
-        maximum_estimate = -1  # assuming that a reward is a non-negative number.
-        best_super_arm = None
-        for super_arm in self.super_arms:
-            prices = [self.prices[p][a] for p, a in enumerate(super_arm)]
-            reward = rounds * sum([price*num for price, num in zip(prices, simulation.run_dp(super_arm))])
-            rewards_per_arms[tuple(super_arm)] = reward
-            if reward > maximum_estimate:
-                maximum_estimate = reward
-                best_super_arm = super_arm
-        self.rewards_per_arms = rewards_per_arms
-        assert best_super_arm is not None
+        for customer in self.customers:
+            customer.set_probability_buy(conversion_rates)
+        simulation = Simulator(self.customers, self.graph, self.customers_distribution)
+
+        with Pool(processes=8) as pool:
+            rewards = pool.imap(evaluate_superarm, [(simulation, self.prices, arm) for arm in self.super_arms])
+            # rewards = [evaluate_superarm((simulation, self.prices, arm)) for arm in self.super_arms]
+            # print(rewards, self.super_arms)
+            maximum_estimate, best_super_arm = max(zip(rewards, self.super_arms))
+
         return best_super_arm
 
     def _get_enumerations(self, depth=0, indexes=None, combinations=None):
