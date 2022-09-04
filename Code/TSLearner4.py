@@ -18,7 +18,8 @@ class TSLearner4(TSLearner):
         """
         super().update(pulled_arm, report)
         self.estimated_alphas = self.estimated_alphas + np.array(report.get_starts())
-        self.customer.set_distribution_alpha(self.estimated_alphas / sum(self.estimated_alphas))
+        for customer in self.customers:
+            customer.set_distribution_alpha(self.estimated_alphas / sum(self.estimated_alphas))
         
         seen = self.estimated_n_items.copy() #old quantity
         bought = report.get_amount_bought()
@@ -34,4 +35,5 @@ class TSLearner4(TSLearner):
         new_mean = self.mean_items.copy()
         new_mean[new_mean>0] = 1 / new_mean[new_mean>0]
         #print("inverted mean: ", new_mean)
-        self.customer.set_num_prods(new_mean)
+        for customer in self.customers:
+            customer.set_num_prods(new_mean)

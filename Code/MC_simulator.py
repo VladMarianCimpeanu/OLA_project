@@ -42,7 +42,10 @@ class Simulator:
                 ans = np.zeros(5)
 
                 # expected amount of items bought
-                ans[primary] = 1 / c.num_prods_distributions[primary][super_arm[primary]]
+                if c.num_prods_distributions[primary][super_arm[primary]] > 1e-4:
+                    ans[primary] = 1 / c.num_prods_distributions[primary][super_arm[primary]]
+                else:
+                    ans[primary] = 1e4
 
                 click_prob = [c.get_probability_click(primary, secondary) for secondary in self.products_graph[primary]]
                 for secondary, edge_prob, λ in zip(self.products_graph[primary], click_prob, λ_SLOTS):

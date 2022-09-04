@@ -29,8 +29,7 @@ class UCBLearner4(UCBLearner):
                 self.mean_items[p,a] = (self.mean_items[p,a] * seen[p,a] + bought[p]) / (self.estimated_n_items[p,a])
 
         #print("mean: " , self.mean_items)
-        new_mean = self.mean_items.copy()
-        new_mean[new_mean>0] = 1 / new_mean[new_mean>0]
+        new_mean = 1 / np.maximum(self.mean_items.copy(), 1e-4)
         #print("inverted mean: ", new_mean)
 
         for customer in self.customers:

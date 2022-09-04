@@ -19,5 +19,5 @@ class UCBLearner5(UCBLearner):
         self.n_bought += new_n_bought
 
         print(self.estimated_graph)
-        self.customer.set_probability_click(self.estimated_graph)
-        
+        for customer in self.customers:
+            customer.set_probability_click(self.estimated_graph)
