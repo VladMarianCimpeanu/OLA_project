@@ -61,6 +61,18 @@ class Simulator:
                 ans += p * alpha * dp(primary, 0)
         return ans
 
+    def shopping_dfs(self, primary, displayed_primary, report, super_arm, c):
+        displayed_primary[primary] = True
+        report.seen(primary)
+        if np.random.random() < c.get_probability_buy(primary, super_arm[primary]):
+            amount = c.get_num_prods(primary, super_arm[primary])
+            report.bought(primary, amount)
+            click_prob = [c.get_probability_click(primary, secondary) for secondary in self.products_graph[primary]]
+            for secondary, edge_prob, λ in zip(self.products_graph[primary], click_prob, λ_SLOTS):
+                if not displayed_primary[secondary] and np.random.random() < λ * edge_prob:
+                    report.move(primary, secondary)
+                    self.shopping_dfs(secondary, displayed_primary, report, super_arm, c)
+
     def run_customer(self, c, super_arm, report):
         """
         run simulation for a single customer. Stops when the customer sees all the products as primary, or he decides
@@ -70,22 +82,9 @@ class Simulator:
         :param report: ReportSimulation instance with all the simulation informations updated at the end
         """
         displayed_primary = [False] * len(super_arm)
-
-        def shopping_dfs(primary):
-            displayed_primary[primary] = True
-            report.seen(primary)
-            if np.random.random() < c.get_probability_buy(primary, super_arm[primary]):
-                amount = c.get_num_prods(primary, super_arm[primary])
-                report.bought(primary, amount)
-                click_prob = [c.get_probability_click(primary, secondary) for secondary in self.products_graph[primary]]
-                for secondary, edge_prob, λ in zip(self.products_graph[primary], click_prob, λ_SLOTS):
-                    if not displayed_primary[secondary] and np.random.random() < λ * edge_prob:
-                        report.move(primary, secondary)
-                        shopping_dfs(secondary)
-
         product = self._choose_primary(c)
         report.update_starts(product)
-        shopping_dfs(product)
+        self.shopping_dfs(product, displayed_primary, report, super_arm, c)
 
     @staticmethod
     def _choose_primary(customer):
@@ -97,3 +96,47 @@ class Simulator:
         distribution_alpha = customer.get_distribution_alpha()
         alphas = np.random.dirichlet(distribution_alpha)
         return sample_categorical_distribution(alphas)
+
+
+class MCSimulator(Simulator):
+    """
+    This class is used only the Learner class in order to solve the combinatorial problem of finding the best super arm
+    through a Montecarlo simulation.
+    """
+    def __init__(self, customers, products_graph, customer_distribution=[1], iterations_per_prod=450):
+        """
+        :param customers: list of customers. This class expects the size of this list to be 1
+        :param products_graph: graph of products as matrix.
+        :param customer_distribution:  distribution of customers. By default it is set to [1] since this classe expects
+        customers to be composed by just one customer.
+        :param iterations_per_prod: iterations to be run from each seed. In this scenario, a seed is a starting product.
+        """
+        super().__init__(customers, products_graph, customer_distribution)
+        self.t = 0
+        self.iterations_per_prod = iterations_per_prod
+        self.current_product = 0
+
+    def run_customer(self, c, super_arm, report):
+        displayed_primary = [False] * len(super_arm)
+        self.current_product = self.t // self.iterations_per_prod
+        report.update_starts(self.current_product)
+        self.shopping_dfs(self.current_product, displayed_primary, report, super_arm, c)
+
+    def run(self, rounds, super_arm):  # TODO we should switch the arguments position in order to set rounds as optional
+        # TODO: this method could be accelerated using multiprocessing ( 1 process for product -> 5)
+        report = ReportSimulation(len(super_arm))
+        rounds = self.iterations_per_prod * len(super_arm)
+        activations = []
+        c = self.customers[0]
+        for _ in range(rounds):
+            self.run_customer(c, super_arm, report)
+            self.t += 1
+            if self.t // self.iterations_per_prod > self.current_product: # estimate reward starting from this product
+                conversions = np.array(report.get_bought()) / self.iterations_per_prod # compute probability to be activated starting from the seed.
+                # conversions[self.current_product] = 1 # since I always start from this product, the activation is always 1
+                activations.append(conversions)
+                report = ReportSimulation(len(super_arm))
+        self.t = 0
+        self.current_product = 0
+        return activations
+

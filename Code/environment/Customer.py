@@ -3,7 +3,8 @@ import numpy as np
 import os
 
 
-DATA_PATH = "{}/../data/customer_classes.json".format(os.path.dirname(os.path.abspath(__file__)))
+#DATA_PATH = "{}/../data/customer_classes.json".format(os.path.dirname(os.path.abspath(__file__)))
+DATA_PATH = "{}/../data/customer2.json".format(os.path.dirname(os.path.abspath(__file__)))
 
 
 class Customer:

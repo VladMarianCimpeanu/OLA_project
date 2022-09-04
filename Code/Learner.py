@@ -2,6 +2,7 @@ import numpy as np
 from Code.MC_simulator import Simulator
 import json
 import os
+from Code.environment.settings import customers_distribution
 from Code.environment.Customer import Customer
 import copy
 from multiprocessing import Pool
@@ -67,7 +68,7 @@ class Learner:
         self.history_expected.append(report.expected_reward(prices))
         self.pulled.append(pulled_arm.copy())
 
-    def select_superarm(self, rounds=50):
+    def select_superarm(self, rounds=100):
         """
         This method runs a montecarlo simulation for each combination of arms in order to determine the best superarm.
         :param rounds: number of simulations that must be run for each combinations of arms

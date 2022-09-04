@@ -4,7 +4,7 @@ import numpy as np
 from Code.environment import settings
 from Code.environment.Customer import Customer
 import Code.utils as utils
-from Code.MC_simulator import Simulator
+from Code.MC_simulator import Simulator, MCSimulator
 import json
 import os
 
