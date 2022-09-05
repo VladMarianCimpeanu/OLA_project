@@ -44,7 +44,7 @@ class Environment:
 
     def round(self, pulled_arm):
         """
-        simulate the customer and return for each product the number of visits, the number of conversions(the user
+        simulate the customers of the day and return for each product the number of visits, the number of conversions(the user
         decides to buy one or more items of that product ---> always count 1) and the number
         of times it has been bought
         """
@@ -101,20 +101,23 @@ class Environment:
                 index]
         return aggregate_buy
 
-    def estimate_clairvoyant(self, precision=10):
+    def estimate_clairvoyant(self, precision=10, customers=None):
         """
         This method computes an estimate of the clairvoyant algorithm using MC simulatios.
         :param precision: integer representing the degree of precision for the estimate: higher is precision, higher is
         the precision of the estimate.
         By default, it is set to 10. Minimum required is 1.
+        :param customers: customers used
         :return: the indexes of the best arm, the daily expected reward and the expected reward per customer
          for the clairvoyant algorithm.
         """
         assert precision > 0
 
         reward_per_arm = {}
+        if customers is None:
+            customers = self.customers
 
-        sim = Simulator(self.customers, self.products_graph, self.customers_distribution)
+        sim = Simulator(customers, self.products_graph, self.customers_distribution)
         best_reward = -1
         best_expected_reward = -1
         enumerations = self._get_enumerations()

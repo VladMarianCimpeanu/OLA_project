@@ -6,8 +6,8 @@ class TSLearner4(TSLearner):
     def __init__(self, n_arms, n_products, customers, products_graph, prices, customers_distribution):
         super().__init__(n_arms, n_products, customers, products_graph, prices, customers_distribution)
         self.estimated_alphas = np.zeros(n_products)
-        self.estimated_n_items = np.zeros((n_products,n_arms))  #number of time each prod has been bought
-        self.estimated_n_bought = np.zeros((n_products,n_arms)) #quantity of items bought
+        self.estimated_n_items = np.zeros((n_products, n_arms))  #number of time each prod has been bought
+        self.estimated_n_bought = np.zeros((n_products, n_arms)) #quantity of items bought
         self.mean_items = np.zeros((n_products,n_arms))
 
 

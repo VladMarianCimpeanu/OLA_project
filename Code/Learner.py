@@ -68,7 +68,7 @@ class Learner:
         self.history_expected.append(report.expected_reward(prices))
         self.pulled.append(pulled_arm.copy())
 
-    def select_superarm(self, rounds=100):
+    def select_superarm(self, rounds=100, reward=False):
         """
         This method runs a montecarlo simulation for each combination of arms in order to determine the best superarm.
         :param rounds: number of simulations that must be run for each combinations of arms
@@ -87,6 +87,8 @@ class Learner:
             # print(rewards, self.super_arms)
             maximum_estimate, best_super_arm = max(zip(rewards, self.super_arms))
 
+        if reward:
+            return best_super_arm, maximum_estimate
         return best_super_arm
 
     def _get_enumerations(self, depth=0, indexes=None, combinations=None):

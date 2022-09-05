@@ -3,16 +3,18 @@ from Code.Learner import Learner
 from Code.UCBLearner import UCBLearner
 
 class UCBLearner4(UCBLearner):
-    def __init__(self, n_arms, n_products, customers, products_graph, prices, customers_distribution):
+    def __init__(self, n_arms, n_products, customers, products_graph, prices, customers_distribution, debug=False):
         super().__init__(n_arms, n_products, customers, products_graph, prices, customers_distribution)
         self.estimated_alphas = np.zeros(n_products)
         self.estimated_n_items = np.zeros((n_products,n_arms))
         self.estimated_n_bought = np.zeros((n_products,n_arms))
         self.mean_items = np.zeros((n_products,n_arms))
+        self.debug = debug
 
 
     def update(self, pulled_arm, report):
-        print("customer alpha:", self.customers[0].get_distribution_alpha()) # TODO at first iteration it is set with the values in json file
+        if self.debug:
+            print("customer alpha:", self.customers[0].get_distribution_alpha()) # TODO at first iteration it is set with the values in json file
         super().update(pulled_arm, report)
         self.estimated_alphas = self.estimated_alphas + np.array(report.get_starts())
         for customer in self.customers:
