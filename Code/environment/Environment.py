@@ -49,6 +49,7 @@ class Environment:
         of times it has been bought
         """
         number_customers = np.maximum(int(np.random.normal(self.customers_per_day, self.variance_customers)), 1)
+        # !!! always 100
         if self.simulator is None:
             self.simulator = Simulator(self.customers, self.products_graph, self.customers_distribution)
         return self.simulator.run(number_customers, pulled_arm)
@@ -115,12 +116,20 @@ class Environment:
 
         reward_per_arm = {}
         if customers is None:
+            #1-6 step, without context
             customers = self.customers
+            customers_distribution = self.customers_distribution
+        else:
+            f1, f2 = customers[0].get_features()
+            f = str(f1) + str(f2) #binary
+            customer_index = int(f, 2) #convert as index
+            customers_distribution = [self.customers_distribution[customer_index]]
 
-        sim = Simulator(customers, self.products_graph, self.customers_distribution)
+        sim = Simulator(customers, self.products_graph, customers_distribution)
+
         best_reward = -1
         best_expected_reward = -1
-        enumerations = self._get_enumerations()
+        enumerations = self._get_enumerations() #all combination of prices
         best_super_arm = None
         for iteration, super_arm in enumerate(enumerations):
             if iteration % 10 == 0:

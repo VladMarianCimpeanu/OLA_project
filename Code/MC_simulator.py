@@ -18,22 +18,7 @@ class Simulator:
         self.products_graph = products_graph
         self.customers_distribution = customer_distribution
 
-    def run(self, rounds, super_arm):
-        """
-        run a simulation on the environment given a super arm of n round
-        :param rounds:
-        :param super_arm: prices selected
-        :return: ReportSimulation instance based on the simulation
-        """
-        report = ReportSimulation(len(super_arm))
-        for _ in range(rounds):
-            index = sample_categorical_distribution(self.customers_distribution)
-            c = self.customers[index]
-            self.run_customer(c, super_arm, report)
-        return report
-
     def run_dp(self, super_arm):
-
         ans = 0
         for c, p in zip(self.customers, self.customers_distribution):
             @lru_cache(maxsize=None)
@@ -46,8 +31,10 @@ class Simulator:
                     ans[primary] = 1 / c.num_prods_distributions[primary][super_arm[primary]]
                 else:
                     ans[primary] = 1e4
+                # !!! this is always 1
 
                 click_prob = [c.get_probability_click(primary, secondary) for secondary in self.products_graph[primary]]
+                
                 for secondary, edge_prob, λ in zip(self.products_graph[primary], click_prob, λ_SLOTS):
                     if (mask & (1 << secondary)) == 0:
                         ans += λ * edge_prob * dp(secondary, mask)
@@ -64,17 +51,20 @@ class Simulator:
                 ans += p * alpha * dp(primary, 0)
         return ans
 
-    def shopping_dfs(self, primary, displayed_primary, report, super_arm, c):
-        displayed_primary[primary] = True
-        report.seen(primary)
-        if np.random.random() < c.get_probability_buy(primary, super_arm[primary]):
-            amount = c.get_num_prods(primary, super_arm[primary])
-            report.bought(primary, amount)
-            click_prob = [c.get_probability_click(primary, secondary) for secondary in self.products_graph[primary]]
-            for secondary, edge_prob, λ in zip(self.products_graph[primary], click_prob, λ_SLOTS):
-                if not displayed_primary[secondary] and np.random.random() < λ * edge_prob:
-                    report.move(primary, secondary)
-                    self.shopping_dfs(secondary, displayed_primary, report, super_arm, c)
+    def run(self, rounds, super_arm):
+        """
+        run a simulation on the environment given a super arm of n round
+        :param rounds:
+        :param super_arm: prices selected
+        :return: ReportSimulation instance based on the simulation
+        """
+        report = ReportSimulation(len(super_arm))
+        for _ in range(rounds):
+            index = sample_categorical_distribution(self.customers_distribution) #choose one customer
+            c = self.customers[index] #select the customer chosen
+            self.run_customer(c, super_arm, report)
+        return report
+
 
     def run_customer(self, c, super_arm, report):
         """
@@ -97,8 +87,20 @@ class Simulator:
         :return : index of selected product
         """
         distribution_alpha = customer.get_distribution_alpha()
-        alphas = np.random.dirichlet(distribution_alpha)
+        alphas = np.random.dirichlet(distribution_alpha) #why this?
         return sample_categorical_distribution(alphas)
+
+    def shopping_dfs(self, primary, displayed_primary, report, super_arm, c):
+        displayed_primary[primary] = True
+        report.seen(primary)
+        if np.random.random() < c.get_probability_buy(primary, super_arm[primary]):
+            amount = c.get_num_prods(primary, super_arm[primary]) #1
+            report.bought(primary, amount)
+            click_prob = [c.get_probability_click(primary, secondary) for secondary in self.products_graph[primary]]
+            for secondary, edge_prob, λ in zip(self.products_graph[primary], click_prob, λ_SLOTS):
+                if not displayed_primary[secondary] and np.random.random() < λ * edge_prob:
+                    report.move(primary, secondary)
+                    self.shopping_dfs(secondary, displayed_primary, report, super_arm, c)
 
 
 class MCSimulator(Simulator):

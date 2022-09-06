@@ -16,6 +16,7 @@ def sample_categorical_distribution(probabilities):
     uniform_sample = np.random.uniform(low=0, high=1)
     for index, item in enumerate(intervals):
         if uniform_sample <= item:
+            #the index of the first probabilities higher than the uniform_sample
             return index
 
 
