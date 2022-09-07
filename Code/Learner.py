@@ -19,7 +19,7 @@ class Learner:
         """
         :param n_arms: number of arms
         :param n_products: number of products
-        :param customer: customer contains all the BELIVED information about the customer by the learner.
+        :param customer: customer contains all the BELIEVED information about the customer by the learner.
         The learner updates the customer's attributes that are not known. The base class assumes that only the conversion
         rate should be estimated, so no customer's attribute will be updated apart from the conversion rates.
         :param products_graph: name of the json file in Code/data with all the relevant information
@@ -82,13 +82,10 @@ class Learner:
         simulation = Simulator(self.customers, self.graph, self.customers_distribution)
 
         with Pool(processes=8) as pool:
-            rewards = pool.imap(evaluate_superarm, [(simulation, self.prices, arm) for arm in self.super_arms])
+            rewards = pool.map(evaluate_superarm, [(simulation, self.prices, arm) for arm in self.super_arms])
             # rewards = [evaluate_superarm((simulation, self.prices, arm)) for arm in self.super_arms]
             # print(rewards, self.super_arms)
-            try:
-                some_object_iterator = iter(rewards)
-            except TypeError as te:
-                print(rewards, 'is not iterable')
+
             maximum_estimate, best_super_arm = max(zip(rewards, self.super_arms))
 
         if reward:

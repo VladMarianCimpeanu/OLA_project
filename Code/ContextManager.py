@@ -5,6 +5,11 @@ import numpy as np
 class ContextManager(object):
 
     def __init__(self, learner_class, n_arms, n_products, customers, products_graph, prices, customers_distribution):
+        self.t = 0
+        self.history_rewards = []
+        self.history_expected = []
+        self.pulled = []
+
         self.n_arms = n_arms
         self.n_products = n_products
         self.customers = customers
@@ -12,6 +17,7 @@ class ContextManager(object):
         self.prices = prices
         self.customers_distribution = customers_distribution
         self.get_learner = learner_class
+
         self.dict_reports = {customer.get_features(): [] for customer in customers}
         self.build_context()
 
@@ -21,9 +27,20 @@ class ContextManager(object):
         :param report: simulation report
         :return: None
         """
+
+        self.history_rewards.append({})
+        self.history_expected.append({})
+        self.pulled.append({})
+
         for features, report in dict_report.items():
             self.dict_reports[features].append((pulled_arm[features], report))
             self.tree.update(features, pulled_arm[features], report)
+
+            prices = [self.prices[p][a] for p, a in enumerate(pulled_arm[features])]
+            self.t += 1
+            self.history_rewards[-1][features] = report.reward(prices)
+            self.history_expected[-1][features] = report.expected_reward(prices)
+            self.pulled[-1][features] = pulled_arm[features].copy()
 
     def select_superarm(self, rounds=100):
         """
@@ -50,7 +67,8 @@ class ContextManager(object):
 
 
 class ContextTree(object):
-    def __init__(self, get_learner, dict_report, left_indexes, n_arms=None, n_products=None, customers=None, products_graph=None, prices=None,
+    def __init__(self, get_learner, dict_report, left_indexes, n_arms=None, n_products=None, customers=None,
+                 products_graph=None, prices=None,
                  customers_distribution=None, root=None):
         """
         Constructor method of context tree object.
@@ -67,6 +85,7 @@ class ContextTree(object):
         :param root: learner at the root of the subtree.
         """
         self.get_learner = get_learner
+
         # don't split reward
         # root of the subtree: consider all the customers aggregate
         if root is None:
@@ -76,9 +95,11 @@ class ContextTree(object):
                     self.learner.update(pulled_arm, report)
         else:
             self.learner = root
+
         # compute current best super arm and best reward for aggregate customer
         best_super_arm, best_maximum_estimate = self.learner.select_superarm(reward=True)
         best_split_info = None
+
         # select best split among the features that has not been checked yet in the higher levels of the tree.
         for feature_id in left_indexes:
             # build left node of the tree for feature at position feature_id
@@ -106,7 +127,13 @@ class ContextTree(object):
                                     self.learner.get_prices(),
                                     r_distribution
                                     )
+
+            # useless split
+            if l_prob == 0 or r_prob == 0:
+                continue
+
             r_dict_report = {k: [] for k in dict_report.keys()}
+
             # train new learners with the reports of their parent.
             for features, values in dict_report.items():
                 for pulled_arm, report in values:
@@ -116,11 +143,13 @@ class ContextTree(object):
                     else:
                         r_learner.update(pulled_arm, report)
                         r_dict_report[features].append((pulled_arm, report))
+
             # compute the best estimates of the new learners.
             _, l_maximum_estimate = l_learner.select_superarm(reward=True)
             _, r_maximum_estimate = r_learner.select_superarm(reward=True)
             assert abs(l_prob + r_prob - 1) <= 1e-5
             estimate_reward = l_maximum_estimate * l_prob + r_maximum_estimate * r_prob
+
             if estimate_reward > best_maximum_estimate:
                 best_maximum_estimate = estimate_reward
                 best_split_info = (l_dict_report, r_dict_report, feature_id)
@@ -133,8 +162,8 @@ class ContextTree(object):
             l_dict_report, r_dict_report, feature_id = best_split_info
             new_indexes = left_indexes.copy()
             new_indexes.remove(feature_id)
-            self.l = ContextTree(self.get_learner, l_dict_report, new_indexes, root=l_learner)
-            self.r = ContextTree(self.get_learner, r_dict_report, new_indexes, root=r_learner)
+            self.l = ContextTree(self.get_learner, l_dict_report, new_indexes.copy(), root=l_learner)
+            self.r = ContextTree(self.get_learner, r_dict_report, new_indexes.copy(), root=r_learner)
             self.feature_id = feature_id
             self.learner = None
 
