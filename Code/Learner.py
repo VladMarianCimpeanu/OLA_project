@@ -85,6 +85,10 @@ class Learner:
             rewards = pool.imap(evaluate_superarm, [(simulation, self.prices, arm) for arm in self.super_arms])
             # rewards = [evaluate_superarm((simulation, self.prices, arm)) for arm in self.super_arms]
             # print(rewards, self.super_arms)
+            try:
+                some_object_iterator = iter(rewards)
+            except TypeError as te:
+                print(rewards, 'is not iterable')
             maximum_estimate, best_super_arm = max(zip(rewards, self.super_arms))
 
         if reward:
@@ -150,3 +154,21 @@ class Learner:
         :return: a list containing the cumulative reward per day
         """
         return self.history_rewards
+
+    def get_customers(self):
+        return self.customers
+
+    def get_customers_distribution(self):
+        return self.customers_distribution
+
+    def get_product_graph(self):
+        return self.products_graph
+
+    def get_n_arms(self):
+        return self.n_arms
+
+    def get_n_products(self):
+        return self.n_products
+
+    def get_prices(self):
+        return self.prices
