@@ -33,7 +33,6 @@ class GreedyLearner(Learner):
         :return:
         """
         self.update_observations(pulled_arm, report)  # method of superclass
-        print(self.history_rewards)
         new_reward = self.history_rewards[-1]
         if self.product_available:
             # already found the best solution only add reward in history
