@@ -17,7 +17,7 @@ class Environment:
         :param p_lambda: probability to observe second slot for secondary products
         :param products_graph: for each product this graph tells its secondary products and in which order.
         """
-        self.customers_behaviour = customers_behaviour
+        self.customers_behaviour = DATA_PATH = f"{os.path.dirname(os.path.abspath(__file__))}/../data/{customers_behaviour}"
         self.customers_per_day = customers_per_day
         self.variance_customers = variance_customers
         self.customers_distribution = settings.customers_distribution  # categorical distribution
@@ -26,10 +26,11 @@ class Environment:
         self.prices = prices
         self.simulator = None
         self.customers = [
-            Customer(0, 0),
-            Customer(0, 1),
-            Customer(1, 0),
-            Customer(1, 1)]
+            Customer(0, 0, file_name=self.customers_behaviour),
+            Customer(1, 0, file_name=self.customers_behaviour),
+            Customer(0, 1, file_name=self.customers_behaviour),
+            Customer(1, 1, file_name=self.customers_behaviour)
+        ]
 
     @classmethod
     def _init_products_graph(cls, name):
@@ -121,8 +122,7 @@ class Environment:
             customers_distribution = self.customers_distribution
         else:
             f1, f2 = customers[0].get_features()
-            f = str(f1) + str(f2)  # binary
-            customer_index = int(f, 2)  # convert as index
+            customer_index = f1 + 2*f2 # convert as index
             customers_distribution = [self.customers_distribution[customer_index]]
 
         sim = Simulator(customers, self.products_graph, customers_distribution)

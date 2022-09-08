@@ -42,6 +42,7 @@ def progress_bar(step, end, width=30):
     completed = "=" * n_completed
     to_complete = " " * (width - n_completed)
     sys.stdout.write("\rloading: [{}{}] {:0.1f}%".format(completed, to_complete, percentage))
+    print()
 
 
 if __name__ == "__main__":

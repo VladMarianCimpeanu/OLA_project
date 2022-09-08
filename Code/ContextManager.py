@@ -154,8 +154,8 @@ class ContextTree(object):
             # compute the best estimates of the new learners.
             _, l_maximum_estimate = l_learner.select_superarm(reward=True)
             _, r_maximum_estimate = r_learner.select_superarm(reward=True)
-            assert abs(l_prob + r_prob - 1) <= 1e-5
-            estimate_reward = l_maximum_estimate * l_prob + r_maximum_estimate * r_prob
+
+            estimate_reward = l_maximum_estimate + r_maximum_estimate
 
             if estimate_reward > best_maximum_estimate:
                 best_maximum_estimate = estimate_reward
@@ -213,8 +213,6 @@ class ContextTree(object):
                 customer_subset.append(c)
                 distribution_subset.append(customers_distribution[pos])
                 p_true += customers_distribution[pos]
-        # normalize customer distribution
-        distribution_subset = np.array(distribution_subset) / np.sum(distribution_subset)
         return customer_subset, distribution_subset, p_true
 
     def get_learners(self, learners=None):

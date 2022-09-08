@@ -1,6 +1,6 @@
 import numpy as np
 
-customers_distribution = [0.2, 0.3, 0.1, 0.4]
+customers_distribution = [0.4, 0.1, 0.25, 0.25]
 λ_SLOTS = [1.0, 0.5]
 prices = np.array([
     [4, 8, 16, 32],

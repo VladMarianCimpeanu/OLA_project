@@ -29,6 +29,7 @@ class EnvironmentContextual(Environment):
         return ans
 
     def estimate_clairvoyant(self, precision=10):
+        print([customer.buy_distribution for customer in self.customers])
         best_super_arm, best_reward, best_expected_reward, reward_per_arm = {}, {}, {}, {}
         for customer in self.customers:
             best_super_arm[customer.get_features()], \
