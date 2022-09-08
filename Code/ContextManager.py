@@ -9,6 +9,7 @@ class ContextManager(object):
         self.history_rewards = []
         self.history_expected = []
         self.pulled = []
+        self.aggregate_rewards = []  # i-th element contain the total reward got at day i
 
         self.n_arms = n_arms
         self.n_products = n_products
@@ -24,10 +25,16 @@ class ContextManager(object):
     def update(self, pulled_arm, dict_report):
         """
         :param pulled_arm: list containing indexes of the pulled arms.
-        :param report: simulation report
+        :param dict_report: simulation report
         :return: None
         """
+        current_features = [learner.get_customers()[0].get_features() for learner in self.tree.get_learners()]
+        daily_reward = 0
+        for features in current_features:
+            prices = [self.prices[p][a] for p, a in enumerate(pulled_arm[features])]
+            daily_reward += dict_report[features].reward(prices)
 
+        self.aggregate_rewards.append(daily_reward)
         self.history_rewards.append({})
         self.history_expected.append({})
         self.pulled.append({})
@@ -209,6 +216,16 @@ class ContextTree(object):
         # normalize customer distribution
         distribution_subset = np.array(distribution_subset) / np.sum(distribution_subset)
         return customer_subset, distribution_subset, p_true
+
+    def get_learners(self, learners=None):
+        if learners is None:
+            learners = []
+        if self.learner is None:
+            self.l.get_learners(learners)
+            self.r.get_learners(learners)
+        else:
+            learners.append(self.learner)
+        return learners
 
     def __str__(self):
         return f'{self.feature_id}<{self.l}, {self.r}>'

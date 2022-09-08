@@ -19,7 +19,7 @@ class Learner:
         """
         :param n_arms: number of arms
         :param n_products: number of products
-        :param customer: customer contains all the BELIEVED information about the customer by the learner.
+        :param customers: customer contains all the BELIVED information about the customer by the learner.
         The learner updates the customer's attributes that are not known. The base class assumes that only the conversion
         rate should be estimated, so no customer's attribute will be updated apart from the conversion rates.
         :param products_graph: name of the json file in Code/data with all the relevant information
@@ -113,6 +113,9 @@ class Learner:
             new_indexes.append(element)
             combinations = self._get_enumerations(new_depth, new_indexes, combinations)
         return combinations
+
+    def compute_lower_bound(self, quantile=0.4):
+        return np.quantile(self.history_expected, quantile)
 
     def estimate_conversion_rates(self):
         """

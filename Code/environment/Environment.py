@@ -116,20 +116,20 @@ class Environment:
 
         reward_per_arm = {}
         if customers is None:
-            #1-6 step, without context
+            # 1-6 step, without context
             customers = self.customers
             customers_distribution = self.customers_distribution
         else:
             f1, f2 = customers[0].get_features()
-            f = str(f1) + str(f2) #binary
-            customer_index = int(f, 2) #convert as index
+            f = str(f1) + str(f2)  # binary
+            customer_index = int(f, 2)  # convert as index
             customers_distribution = [self.customers_distribution[customer_index]]
 
         sim = Simulator(customers, self.products_graph, customers_distribution)
 
         best_reward = -1
         best_expected_reward = -1
-        enumerations = self._get_enumerations() #all combination of prices
+        enumerations = self._get_enumerations()  # all combination of prices
         best_super_arm = None
         for iteration, super_arm in enumerate(enumerations):
             if iteration % 10 == 0:
