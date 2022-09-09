@@ -2,6 +2,7 @@ import numpy as np
 from Code.Learner import Learner
 from Code.UCBLearner import UCBLearner
 
+
 class UCBLearner4(UCBLearner):
     def __init__(self, n_arms, n_products, customers, products_graph, prices, customers_distribution, debug=False):
         super().__init__(n_arms, n_products, customers, products_graph, prices, customers_distribution)

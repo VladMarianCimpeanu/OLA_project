@@ -50,7 +50,6 @@ class Environment:
         of times it has been bought
         """
         number_customers = np.maximum(int(np.random.normal(self.customers_per_day, self.variance_customers)), 1)
-        # !!! always 100
         if self.simulator is None:
             self.simulator = Simulator(self.customers, self.products_graph, self.customers_distribution)
         return self.simulator.run(number_customers, pulled_arm)
