@@ -8,7 +8,7 @@ class TSLearner4(TSLearner):
         self.estimated_alphas = np.zeros(n_products)
         self.estimated_n_items = np.zeros((n_products, n_arms))  #number of time each prod has been bought
         self.estimated_n_bought = np.zeros((n_products, n_arms)) #quantity of items bought
-        self.mean_items = np.zeros((n_products,n_arms))
+        self.mean_items = np.ones((n_products,n_arms))
 
 
     def update(self, pulled_arm, report):
