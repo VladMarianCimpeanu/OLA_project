@@ -5,12 +5,13 @@ import Code.environment.settings as settings
 import os
 
 
-DATA_PATH = "{}/../data/customer_n_s.json".format(os.path.dirname(os.path.abspath(__file__)))
+#DATA_PATH = "{}/../data/customer3_n_s.json".format(os.path.dirname(os.path.abspath(__file__)))
 
 class EnvironmentNonStationary(Environment):
     def __init__(self, customers_behaviour, customers_per_day, variance_customers, p_lambda, products_graph, prices,
                  abrupt_change_interval):
         super().__init__(customers_behaviour, customers_per_day, variance_customers, p_lambda, products_graph, prices)
+        DATA_PATH = f"{os.path.dirname(os.path.abspath(__file__))}/../data/{customers_behaviour}"
         self.abrupt_change_interval = abrupt_change_interval
         self.customers_ns = [
             Customer(0, 0, file_name=DATA_PATH),
