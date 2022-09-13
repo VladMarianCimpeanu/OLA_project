@@ -63,7 +63,8 @@ class Environment:
         :return: list of alphas
         """
         weighted_alphas = []
-        for index, customer in enumerate(self.customers):
+        for customer in self.customers:
+            index = customer.get_features_id()
             weighted_alphas.append(np.array(customer.get_distribution_alpha()) * self.customers_distribution[index])
         aggregate_alphas = np.array([0 for _ in range(len(weighted_alphas[0]))])
         for alphas in weighted_alphas:
@@ -79,7 +80,8 @@ class Environment:
         :return: get a np.array containing all the aggregate probability distributions for each product for each arm.
         """
         current_distribution = np.zeros_like(self.prices)
-        for index, customer in enumerate(self.customers):
+        for customer in self.customers:
+            index = customer.get_features_id()
             current_distribution = current_distribution + \
                                    np.array(customer.get_num_prods_distribution()) * self.customers_distribution[index]
         return current_distribution
@@ -90,14 +92,16 @@ class Environment:
         :return: an np.array containing the click graph as matrix.
         """
         aggregate_graph = np.zeros((len(self.prices), len(self.prices)))
-        for index, customer in enumerate(self.customers):
+        for customer in self.customers:
+            index = customer.get_features_id()
             aggregate_graph = aggregate_graph + np.array(customer.get_click_graph()) * self.customers_distribution[
                 index]
         return aggregate_graph
 
     def _get_aggregate_buy(self):
         aggregate_buy = np.zeros_like(self.prices)
-        for index, customer in enumerate(self.customers):
+        for customer in self.customers:
+            index = customer.get_features_id()
             aggregate_buy = aggregate_buy + np.array(customer.get_buy_distribution()) * self.customers_distribution[
                 index]
         return aggregate_buy
@@ -120,8 +124,7 @@ class Environment:
             customers = self.customers
             customers_distribution = self.customers_distribution
         else:
-            f1, f2 = customers[0].get_features()
-            customer_index = f1 + 2*f2 # convert as index
+            customer_index = customers[0].get_features_id() # convert as index
             customers_distribution = [self.customers_distribution[customer_index]]
 
         sim = Simulator(customers, self.products_graph, customers_distribution)

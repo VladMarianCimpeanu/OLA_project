@@ -75,6 +75,9 @@ class Customer:
     def get_buy_distribution(self):
         return self.buy_distribution.copy()
 
+    def get_features_id(self):
+        return 2*self.feature_1 + self.feature_2
+
     def set_probability_click(self, click_graph):
         self.click_graph = click_graph
 
@@ -92,3 +95,4 @@ class Customer:
 
     def __repr__(self):
         return self.__str__()
+

@@ -19,7 +19,7 @@ class EnvironmentContextual(Environment):
 
         ans = {}
         for customer in self.customers:
-            customer_id = customer.get_features()[0] + customer.get_features()[1] * 2
+            customer_id = customer.get_features_id()
             number_customers = counter_customers.get(customer_id)
             if number_customers is None:
                 number_customers = 0
