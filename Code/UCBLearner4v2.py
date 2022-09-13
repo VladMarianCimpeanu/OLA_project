@@ -10,8 +10,9 @@ class UCBLearner4(UCBLearner):
         self.estimated_n_items = np.zeros((n_products, n_arms))
         self.estimated_n_bought = np.zeros((n_products, n_arms))
         self.mean_items = np.zeros((n_products, n_arms))
-        self.debug = debug
         self.upper_bounds_items = np.full((n_products, n_arms), np.inf)
+
+        self.debug = debug
 
     def update(self, pulled_arm, report):
         if self.debug:
