@@ -48,9 +48,9 @@ class UCBLearner4(UCBLearner):
     def select_superarm(self, rounds=100, reward=False):
         # set new value of n_prod
         new_val = self.mean_items.copy() + self.upper_bounds_items.copy()
-        new_mean = 1 / np.maximum(new_val, 1e-4)
+        inverse_mean = np.minimum(1 / np.maximum(new_val, 1e-4), 1e4)
         for customer in self.customers:
-            customer.set_num_prods(new_mean)
-        super().select_superarm()
+            customer.set_num_prods(inverse_mean)
+        return super().select_superarm()
 
 
