@@ -87,7 +87,7 @@ class Simulator:
         :return : index of selected product
         """
         distribution_alpha = customer.get_distribution_alpha()
-        alphas = np.random.dirichlet(distribution_alpha) #why this?
+        alphas = np.random.dirichlet(distribution_alpha) 
         return sample_categorical_distribution(alphas)
 
     def shopping_dfs(self, primary, displayed_primary, report, super_arm, c):
