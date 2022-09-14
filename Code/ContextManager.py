@@ -160,7 +160,7 @@ class ContextTree(object):
 
             if estimate_reward > best_maximum_estimate:
                 best_maximum_estimate = estimate_reward
-                best_split_info = (l_dict_report, r_dict_report, feature_id)
+                best_split_info = (l_dict_report, r_dict_report, feature_id, l_learner, r_learner)
 
         if best_split_info is None:  # no split
             self.l = None
