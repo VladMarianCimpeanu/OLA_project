@@ -1,4 +1,3 @@
-from turtle import left
 from Code.ReportSimulation import ReportSimulation
 import numpy as np
 
@@ -137,7 +136,7 @@ class ContextTree(object):
                                     )
 
             # useless split
-            
+
             if l_prob == 0 or r_prob == 0:
                 continue
 
@@ -161,7 +160,7 @@ class ContextTree(object):
 
             if estimate_reward > best_maximum_estimate:
                 best_maximum_estimate = estimate_reward
-                best_split_info = (l_dict_report, r_dict_report, feature_id, l_learner, r_learner)
+                best_split_info = (l_dict_report, r_dict_report, feature_id)
 
         if best_split_info is None:  # no split
             self.l = None

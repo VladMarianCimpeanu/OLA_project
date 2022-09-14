@@ -40,6 +40,7 @@ class Learner:
         self.super_arms = self._get_enumerations()
         self.history_rewards = []
         self.history_expected = []
+        self.history_interactions = []
 
     @classmethod
     def _load_products(cls, name):
@@ -62,11 +63,14 @@ class Learner:
         :param report: simulation report
         :return: None
         """
-        self.t += 1
+        seen_today = np.sum(np.array(report.get_seen()))
         prices = [self.prices[p][a] for p, a in enumerate(pulled_arm)]
+
+        self.t += 1
         self.history_rewards.append(report.reward(prices))
         self.history_expected.append(report.expected_reward(prices))
         self.pulled.append(pulled_arm.copy())
+        self.history_interactions.append(np.sum(self.history_interactions.copy()) + seen_today)
 
     def select_superarm(self, rounds=100, reward=False):
         """

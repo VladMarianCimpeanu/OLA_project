@@ -15,8 +15,8 @@ class EnvironmentNonStationary(Environment):
         self.abrupt_change_interval = abrupt_change_interval
         self.customers_ns = [
             Customer(0, 0, file_name=DATA_PATH),
-            Customer(0, 1, file_name=DATA_PATH),
             Customer(1, 0, file_name=DATA_PATH),
+            Customer(0, 1, file_name=DATA_PATH),
             Customer(1, 1, file_name=DATA_PATH)
         ]
         self.t = 0
