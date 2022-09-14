@@ -109,10 +109,8 @@ class ContextTree(object):
         best_split_info = None
 
         # select best split among the features that has not been checked yet in the higher levels of the tree.
-        print("1: left inx", left_indexes)
         for feature_id in left_indexes:
             # build left node of the tree for feature at position feature_id
-            print("build left")
             l_customers_subset, l_distribution, l_prob = self.get_subset_customers(self.learner.get_customers(),
                                                                                    self.learner.get_customers_distribution(),
                                                                                    feature_id,
@@ -126,7 +124,6 @@ class ContextTree(object):
                                     )
             l_dict_report = {k: [] for k in dict_report.keys()}
             # build right node of the tree for feature at position feature_id
-            print("build right")
             r_customers_subset, r_distribution, r_prob = self.get_subset_customers(self.learner.get_customers(),
                                                                                    self.learner.get_customers_distribution(),
                                                                                    feature_id,
@@ -142,9 +139,6 @@ class ContextTree(object):
             # useless split
             
             if l_prob == 0 or r_prob == 0:
-                print("useless split")
-                print(l_prob)
-                print(r_prob)
                 continue
 
             r_dict_report = {k: [] for k in dict_report.keys()}
@@ -162,32 +156,23 @@ class ContextTree(object):
             # compute the best estimates of the new learners.
             _, l_maximum_estimate = l_learner.select_superarm(reward=True)
             _, r_maximum_estimate = r_learner.select_superarm(reward=True)
-            print("all rew: ", best_maximum_estimate)
-            print("L rew: ", l_maximum_estimate)
-            print("R rew: ", r_maximum_estimate)
 
             estimate_reward = l_maximum_estimate + r_maximum_estimate
 
             if estimate_reward > best_maximum_estimate:
-                print("XXX")
                 best_maximum_estimate = estimate_reward
                 best_split_info = (l_dict_report, r_dict_report, feature_id, l_learner, r_learner)
 
         if best_split_info is None:  # no split
-            print("no split")
             self.l = None
             self.r = None
             self.feature_id = -1
         else:  # split
-            print("split")
-            print("2: left idx", left_indexes)
             l_dict_report, r_dict_report, feature_id, l_learner, r_learner = best_split_info
             new_indexes = left_indexes.copy()
             new_indexes.remove(feature_id)
             self.l = ContextTree(self.get_learner, l_dict_report, new_indexes.copy(), root=l_learner)
-            print("LLL: ", l_learner.customers)
             self.r = ContextTree(self.get_learner, r_dict_report, new_indexes.copy(), root=r_learner)
-            print("RRR: ", r_learner.customers)
             self.feature_id = feature_id
             self.learner = None
 
@@ -224,14 +209,12 @@ class ContextTree(object):
         customer_subset = []
         distribution_subset = []
         p_true = 0
-        print("AAAAA: ", customer_set)
         for pos, c in enumerate(customer_set):
             feature = c.get_features()[feature_pos]
             if feature == feature_val:
                 customer_subset.append(c)
                 distribution_subset.append(customers_distribution[pos])
                 p_true += customers_distribution[pos]
-                print("CUST", customer_subset)
         return customer_subset, distribution_subset, p_true
 
     def get_learners(self, learners=None):
