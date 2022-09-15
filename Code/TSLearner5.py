@@ -17,5 +17,6 @@ class TSLearner5(TSLearner):
                 self.estimated_graph[i,:] = (self.estimated_graph[i,:] * self.n_bought[i] + n_clicks[i,:]) / (self.n_bought[i] + new_n_bought[i])
 
         self.n_bought += new_n_bought
-        self.customer.set_probability_click(self.estimated_graph)
+        for customer in self.customers:
+            customer.set_probability_click(self.estimated_graph)
         
