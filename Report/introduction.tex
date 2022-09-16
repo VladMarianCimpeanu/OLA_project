@@ -1,0 +1,14 @@
+Nowadays one big problem of e-commerces is to allocate the best price to its products so that,
+the seller can maximize its revenue.
+The main issue is that increasing the price of a product leads to less people interested in that product, thus
+increasing the price is not necessarily beneficial to the seller, in contrast decreasing the price will increase the number
+of people interested in the product, but the revenue will be of course suboptimal.
+In order to do maximize the revenue we can analyze the demand curve of a given product which is
+a graphical representation of the relationship between the price $p_i$ of a good or service $i$ and the quantity demanded $q_i(p_i)$
+for a given period of time, and find the price $\hat{p}$ such that:
+\begin{align*}
+    \hat{p} = \argmax_p(pq(p))
+\end{align*}
+Unfortunately, in real world problems, the demand curve is not available, furthermore, we need to estimate this curve using
+reinforcement learning techniques such as MAB (Multi Armed Bandit) algorithms.\\
+In this project we want to study the case of a new e-commerce entering the market called ANS$^2$
