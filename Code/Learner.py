@@ -70,10 +70,7 @@ class Learner:
         self.history_rewards.append(report.reward(prices))
         self.history_expected.append(report.expected_reward(prices))
         self.pulled.append(pulled_arm.copy())
-        if self.history_interactions:
-            self.history_interactions.append(self.history_interactions[-1] + seen_today)
-        else:
-            self.history_interactions.append(seen_today)
+        self.history_interactions.append(seen_today)
 
     def select_superarm(self, rounds=100, reward=False):
         """
