@@ -7,23 +7,36 @@ class GreedyLearner(Learner):
         super().__init__(n_arms, n_products, customers, products_graph, prices, customers_distribution)
         self.expected_rewards = [0] * n_products
         self.arms_selected = [0] * n_products  # start from all lowest price (0)
-        self.product_available = [_ for _ in range(n_products)]
+        product_available = [_ for _ in range(n_products)] #list with product tha can still increase their price
+        self.new_configuration = np.zeros((n_products, n_products)).astype(int) #all new 5 configuration (arm) selected in this iteration
         self.best_reward = -1
-        self.product_incremented = 0
+        self.config_to_chose = 0
+        self.products_available = []
+        for config in range(n_products):
+            self.products_available.append(product_available.copy())
+        self.reword_config = [] #where I store the rewards of the 5 configurations
+        self.report_config = []
+        self.number_config = 5
+        self. counter = 0
+
 
     def select_superarm(self, rounds=None):
         """
         it should start from all lower prices, then pull one arm randomly each time (so increase its price)
         and evaluate it... each time increase just one until no improvement
         """
-        previous_selected = self.arms_selected.copy()
-        if self.product_available:
-            if self.t != 0:
-                random_product = np.random.choice(self.product_available)
-                self.arms_selected[random_product] += 1
-                self.product_incremented = random_product
-        assert previous_selected != self.arms_selected or not self.product_available or self.t == 0
-        return self.arms_selected.copy()
+        if self.t!=0:
+            if self.products_available[self.config_to_chose]:
+                self.counter += 1
+                product_random = np.random.choice(self.products_available[self.config_to_chose])
+                self.new_configuration[self.config_to_chose, product_random] += 1
+                if self.new_configuration[self.config_to_chose, product_random] == 3:
+                    self.products_available[self.config_to_chose].remove(product_random)
+                for c in range(self.number_config):
+                    #remove the possible product from the other
+                    if c != self.config_to_chose:
+                        self.products_available[c].remove(product_random)
+        return self.new_configuration[self.config_to_chose].copy()
 
     def update(self, pulled_arm, report):
         """""
@@ -32,19 +45,48 @@ class GreedyLearner(Learner):
         :param report: real information about true data from environment
         :return:
         """
-        self.update_observations(pulled_arm, report)  # method of superclass
-        new_reward = self.history_rewards[-1]
-        if self.product_available:
-            # already found the best solution only add reward in history
-            if new_reward < self.best_reward:
-                if self.product_incremented in self.product_available:
-                    self.product_available.remove(self.product_incremented)
-                self.arms_selected[self.product_incremented] -= 1
+        if self.t == 0:
+            self.update_observations(pulled_arm, report)
+        else:
+            #save the report of the new configuration
+            prices = [self.prices[p][a] for p, a in enumerate(pulled_arm)]
+            self.reword_config.append(report.reward(prices))
+            self.report_config.append(report)
+            self.update_observations(pulled_arm, report)
+            if self.number_config == self.counter:
+                #compare
+                for c in range(self.number_config):
+                    if self.best_reward < self.reword_config[c]:
+                        config_selected = c
+                        self.best_reward = self.reword_config[c]
+                        self.arms_selected = self.new_configuration[c]
+                self.config_to_chose = 0
+                products_available = self.get_product_available(self.arms_selected)
+                for config in range(self.number_config):
+                    self.products_available[config] = products_available.copy()
+                    self.new_configuration[config] = self.arms_selected.copy()
+                self.reward_config = [] 
+                self.report_config = []
+                self.counter = 0
             else:
-                self.best_reward = new_reward
-            if self.arms_selected[self.product_incremented] == self.n_arms - 1:
-                # selected the highest price, remove this product from the possible choices
-                self.product_available.remove(self.product_incremented)
+                self.config_to_chose += 1
+        
+        
+
+    def get_product_available(self, arms_selected):
+        sol = []
+        number_of_maximum = 0
+        for i in range(self.n_products):
+            if arms_selected[i] < 3:
+                sol.append(i)
+            else:
+                number_of_maximum += 1
+        self.number_config = 5 - number_of_maximum
+        if self.number_config > 0:
+            self.new_configuration = self.new_configuration[:self.number_config]
+            self.products_available = self.products_available[:self.number_config]
+        return sol
+
 
     def get_rewards(self):
         return self.history_rewards

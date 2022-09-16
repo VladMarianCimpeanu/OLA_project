@@ -1,0 +1,11 @@
+Here we consider the case in wich all the parameters are known and and the goal is to maximize the cumulative expected reward, following a greedy approach.\\
+The algorithm works as follow:
+\begin{enumerate}
+    \item set the prices of all the pruducts with the lowest one
+    \item evaluate the marginal increase obtained by increasing the price of just one product
+    \item compare the five different configuration obtained with the previous one. There could be two case\begin{enumerate}
+        \item there is an increase of the reward, so select the one that gave the maximum reward (the highest increase) and repeat the algorithm from point 2
+        \item there is no increse (all the new configuration is worst than the previous one) and stop the algoritm. 
+    \end{enumerate}
+    \item Return the actual best configuration.
+\end{enumerate}
