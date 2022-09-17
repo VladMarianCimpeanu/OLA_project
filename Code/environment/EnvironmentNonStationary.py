@@ -5,8 +5,6 @@ import Code.environment.settings as settings
 import os
 
 
-#DATA_PATH = "{}/../data/customer3_n_s.json".format(os.path.dirname(os.path.abspath(__file__)))
-
 class EnvironmentNonStationary(Environment):
     def __init__(self, customers_behaviour, customers_per_day, variance_customers, p_lambda, products_graph, prices,
                  abrupt_change_interval):
@@ -25,19 +23,15 @@ class EnvironmentNonStationary(Environment):
 
 
     def round(self, pulled_arm):
-        print("t: ", self.t)
         phase = self.t // self.abrupt_change_interval
-        print("phase", phase)
         if phase > self.n_phase-1:
             phase = self.n_phase-1
         if self.simulator is None or phase != self.phase:
-            print("set customer")
             self.customers = []
             for c in self.customers_ns:
                 self.customers.append(
                     Customer(c.feature_1, c.feature_2, buy_distribution=c.get_buy_distribution()[phase])
                 )
-                print("conv_rate:",c.get_buy_distribution()[phase])
             self.phase = phase
             self.simulator = Simulator(self.customers, self.products_graph, self.customers_distribution)
         self.t += 1
