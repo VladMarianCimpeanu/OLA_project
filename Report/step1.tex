@@ -1,0 +1,82 @@
+The main aim of the environment is to simulate a real-world scenario. To simulate all the components we divide the model into various classes.
+\begin{itemize}
+    \item Environment class: It is the wrapper that manages the environment and all its functions. There are two specializations of this class created for some specific use cases (which are EnvironmentContextual and EnvironmentNonStationary).
+    \item Simulator class: It manages the simulation of the customers' interactions.
+    \item Customer class: It contains all the information that defines a type of customer.
+\end{itemize}
+
+\subsection{Parameters}
+The environment has a lot of parameters and each of them has a direct and significant impact on the behavior of the model.
+Some of the parameters are specifics of the environment:
+\begin{itemize}
+  \item \verb|customers_distribution| is a list of 4 floating values, that sum to 1. It indicates the probability of each type of customer appearing.
+  \item \verb|customer_per_day| is the average number of customers in a day.
+  \item \verb|variance_customers| is the standard deviation of the number of customers in a day.
+  \item \verb|products_graph| is the graph that indicates which is the primary and secondary product.
+  \item \verb|p_lambda| is the probability of observing each slot. The first value is 1, while the second is a number smaller than 1.
+  \item \verb|prices| indicates the reward for each product and each price level. Therefore, it is a 4 x 5 matrix.
+\end{itemize}
+Additionally, some parameters are specifics of the customer:
+\begin{itemize}
+    \item \verb|features| is the pair of binary features.
+    \item \verb|alpha| is the probability distribution of starting from each product.
+    \item \verb|buy_distribution| is the probability of buying products given a selected price and type of product.
+    \item \verb|num_prods_distribution| is the parameters of the geometrical distribution of the number of products to buy given a selected price and type of product.
+    \item \verb|click_graph| is the probability of clicking the product given a selected price and type of product.
+\end{itemize}
+
+\subsection{Learner interaction}
+The main aim of the learner is to minimize the cumulative regret by selecting the best price levels.
+Therefore, at the beginning of each day, the learner selected the price levels (which is the super arm), and then at the end of the day it will obtain a report containing all the information about the customer activities, i.e. number of times bought, number of products seen, number of customers.
+
+
+\subsection{Customer interaction}
+The customer interaction works in the following manner:
+\begin{enumerate}
+    \item Depending on the \verb|alpha| distribution a starting point is randomly chosen.
+    \item The customer opens the page and she will buy one or more products with a probability depending on \verb|buy_distribution|. If she does not buy the simulation stops, otherwise the number of items bought is sampled from a geometrical distribution.
+    \item Then, with a probability that depends on \(\lambda\) and the \verb|click_graph|, she explores a different product. However, if she has already seen this product, she will not open that page.
+\end{enumerate}
+
+\subsection{Simulation}
+To run the simulation we implement two methods. The first one which is used by the environment is the Monte Carlo simulation and the second one is a dynamic programming approach.
+
+\subsubsection{Monte Carlo Simulation}
+The Monte Carlo simulation runs the customer interaction multiple times. However, this method is stochastic and very noisy, and to obtain a decent estimate we need to run a massive number of simulations which makes the simulation process astonishingly slow.
+
+\begin{minted}[breaklines]{python}
+def shopping_dfs(self, primary, displayed_primary, report, super_arm, c):
+  displayed_primary[primary] = True
+  report.seen(primary)
+  if np.random.random() < c.get_probability_buy(primary, super_arm[primary]):
+    amount = c.get_num_prods(primary, super_arm[primary]) #1
+    report.bought(primary, amount)
+    click_prob = [c.get_probability_click(primary, secondary) for secondary in self.products_graph[primary]]
+    for secondary, edge_prob, lamb in zip(self.products_graph[primary], click_prob, lamb_SLOTS):
+      if not displayed_primary[secondary] and np.random.random() < lamb * edge_prob:
+        report.move(primary, secondary)
+        self.shopping_dfs(secondary, displayed_primary, report, super_arm, c)
+\end{minted}
+
+
+\subsubsection{Dynamic programming approach}
+To overcome the limitation of the Monte Carlo simulation we develop a dynamic programming solution that returns the expected number of items bought. This method has a time complexity of \(\Theta(2^{N}NM)\), where \(N\) is the number of items and \(M\) is the number of types of customers, therefore, this solution is only feasible because the number of items is quite small.
+\begin{minted}[breaklines]{python}
+def run_dp(self, super_arm):
+  ans = 0
+  for c, p in zip(self.customers, self.customers_distribution):
+    @lru_cache(maxsize=None)
+    def dp(primary, mask):
+      mask |= 1 << primary
+      ans = np.zeros(5)
+      ans[primary] = 1 / c.num_prods_distributions[primary][super_arm[primary]]
+      click_prob = [c.get_probability_click(primary, secondary) for secondary in self.products_graph[primary]]
+      for secondary, edge_prob, lamb in zip(self.products_graph[primary], click_prob, lamb_SLOTS):
+        if (mask & (1 << secondary)) == 0:
+          ans += lamb * edge_prob * dp(secondary, mask)
+      ans *= c.get_probability_buy(primary, super_arm[primary])
+      return ans
+    for primary, alpha in enumerate(c.get_distribution_alpha()):
+      ans += p * alpha * dp(primary, 0)
+  return ans
+\end{minted}
