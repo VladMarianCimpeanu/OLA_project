@@ -58,9 +58,13 @@ class UCBLearnerActive(UCBLearner):
             
 
 class UCBLearnerActive2(UCBLearnerActive):
-    def __int__(self, n_arms, n_products, customers, products_graph, prices, customers_distribution, splitter=5):
+    def __init__(self, n_arms, n_products, customers, products_graph, prices, customers_distribution, splitter=5):
         super().__init__(n_arms, n_products, customers, products_graph, prices, customers_distribution, splitter)
         self.t_arms = np.zeros((n_products, n_arms))
+
+    def update(self, pulled_arm, report):
+        super().update(pulled_arm, report)
+        self.t_arms = self.t_arms + 1
 
     def change_detection_test(self, pulled_arm, report):
         conv_rate = report.get_conversion_rate()
@@ -79,7 +83,6 @@ class UCBLearnerActive2(UCBLearnerActive):
             if self.t_arms[product, arm] > 11 and (mean1 < mean2 - delta or mean1 > mean2 + delta) and not np.isinf(
                     self.upper_bounds[product, arm]):
                 # detected an abruth change
-                print("abrupt change for product {}, arm {}".format(product, arm))
                 self.t_arms[product, arm] = 0
                 self.means[product, arm] = 0
                 self.upper_bounds[product, arm] = np.inf
