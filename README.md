@@ -9,3 +9,10 @@ Developed by...
  *Social influence techniques and Pricing*
  
  Description ...
+
+
+### Compile the report
+Use the following command to compile the report.
+```bash
+pdflatex -shell-escape  main.tex
+```
