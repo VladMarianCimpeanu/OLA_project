@@ -6,10 +6,7 @@ Since the learners are not able to distinguish the different types of customers,
 The number of daily interaction, customers that visit the e-commerce, is fixed to 100 and the time horizon, number of day of exploration each iteraction of the algorithm, to 300. The algorithms are also executed 5 rimes, that is the number of iteration.
 
 \subsection{UCB}
-Upper Confidence Bound is a deterministic algorithm that associated an upper confidence bound to every arm, providing an optimistic estimation of the reward
-    every day (round) is chosen the arm with the highest upper confidence bound
-    it updates the upper confidence bound by observing the realization of the reward obtained by the arm pulled
-
+Upper Confidence Bound is a deterministic algorithm that associated an upper confidence bound to every arm, providing an optimistic estimation of the reward.
 The steps are the following:
 \begin{enumerate}
     \item Initially the means and the upper confidence bounds of each arm (price) for each product are set to zero and infinite respectivelly \[ means=
@@ -81,14 +78,64 @@ Even if the algorithm converge to the optimal arm at the beguinning of the proce
 
 
 \subsection{TS}
-Thomson Sampling is a stochastic algorithm
-
-
-
-
-
-
+Thomson Sampling is a stochastic algorithm that set a prior on the expected value for every arm, and selects the arm with the best sample, accordingli tu the updated parameters. Those parameters are alled Beta parameters, for the distribution, and take account of the number of success ($\alpha$) and of insuccess ($\beta$). The sum of the two parameters is equal to the number of times the arm has been pulled.\\The steps are the following:
+\begin{enumerate}
+    \item Set all the $\alpha$ and $\beta$ parameters equal to one. \[\begin{bmatrix}
+    \begin{bmatrix}
+        1 & 1\\
+        1 & 1\\
+        1 & 1\\
+        1 & 1\\
+    \end{bmatrix}
+    \begin{bmatrix}
+        1 & 1\\
+        1 & 1\\
+        1 & 1\\
+        1 & 1\\
+    \end{bmatrix}
+    \begin{bmatrix}
+        1 & 1\\
+        1 & 1\\
+        1 & 1\\
+        1 & 1\\
+    \end{bmatrix}
+    \begin{bmatrix}
+        1 & 1\\
+        1 & 1\\
+        1 & 1\\
+        1 & 1\\
+    \end{bmatrix}
+    \begin{bmatrix}
+        1 & 1\\
+        1 & 1\\
+        1 & 1\\
+        1 & 1\\
+    \end{bmatrix}
+    \begin{bmatrix}
+        1 & 1\\
+        1 & 1\\
+        1 & 1\\
+        1 & 1\\
+    \end{bmatrix}
+    \end{bmatrix} \]
+    \item Estimate the conversion rate by drawing a sample from a Beta distribution with $\alpha$ and $\beta$ parameters \begin{minted}[breaklines]{python}
+        def estimate_conversion_rates(self):
+            return np.random.beta(a=self.beta_parameters[:, :, 0], b=self.beta_parameters[:, :, 1])
+        \end{minted}
+    \item Select the super arm that return the highest reward fromn the MC simulation
+    \item Update the $\alpha$ and $\beta$ parameters:\\
+        $\alpha$[p, a] = $\alpha$[p, a] + bought[p]\\\\
+        $\beta$[p, a] = $\beta$[p, a] + seen[p] - bought[p]
+    \begin{itemize}
+        \item $\alpha[p, a]$ is the alpha parameter for the product {\bf p} with the price {\bf a}
+        \item $\beta[p, a]$ is the beta parameter for the product {\bf p} with the price {\bf a}
+        \item bought[p] is the number of times the product {\bf p} has been bought till now
+        \item seen[p] is the number of times the product {\bf p} has been visualized by the customers
+    \end{itemize}
+    \item Repeat from step 2 until the end of the iteraction (300 days)
+\end{enumerate}
 \subsubsection{Results}
+As we can see below the algorithm converge to the optimal super arm really quicly, so the regret goes to zero in the really first days. This is what expected when there is a prior information that influence the choice of an arm. 
 \begin{figure}[ht]
     \begin{center}
     \includegraphics[width=0.6\textwidth]{img/TS3.png}
