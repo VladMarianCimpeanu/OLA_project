@@ -1,4 +1,16 @@
+This step is very similar to step 4, however, we can observe the customer features.
+Therefore, we can set different price levels for every type of customer.
+To leverage this information, every two weeks a context context-generation algorithm is executed.
+The algorithm uses a feature tree to select the learner, and it is built using a greedy splitting technique.
 
+\subsection{How to build the feature tree}
+Starting from the root node, for each feature the algorithm computes the expected reward without splitting, so by training only a single learner and with splitting on the features, therefore, by training two learners on two partitions of the data.
+If the expected reward is larger in the latter case, the node is split in the two cases and the process continues recursively on every new node.
+The splitting condition is the following:
+\begin{equation}
+    p_l\mu_l + p_r \mu_r \geq \mu,
+\end{equation}
+where \(p_l\) and \(p_r\) are the probability weights and (\mi\), \(\mi_l\) and \(\mi_r\) are the expected reward.
 
 \subsection{Results}
 \subsubsection{UCB}
@@ -113,8 +125,5 @@
         \end{center}
     \end{figure}
 \end{multicols}
-
-
-
 
 \subsubsection{TS}
