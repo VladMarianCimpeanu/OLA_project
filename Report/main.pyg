@@ -1,17 +1,22 @@
-def run_dp(self, super_arm):
-  ans = 0
-  for c, p in zip(self.customers, self.customers_distribution):
-    @lru_cache(maxsize=None)
-    def dp(primary, mask):
-      mask |= 1 << primary
-      ans = np.zeros(5)
-      ans[primary] = 1 / c.num_prods_distributions[primary][super_arm[primary]]
-      click_prob = [c.get_probability_click(primary, secondary) for secondary in self.products_graph[primary]]
-      for secondary, edge_prob, lamb in zip(self.products_graph[primary], click_prob, lamb_SLOTS):
-        if (mask & (1 << secondary)) == 0:
-          ans += lamb * edge_prob * dp(secondary, mask)
-      ans *= c.get_probability_buy(primary, super_arm[primary])
-      return ans
-    for primary, alpha in enumerate(c.get_distribution_alpha()):
-      ans += p * alpha * dp(primary, 0)
-  return ans
+    def change_detection_test(self, pulled_arm, report):
+        conv_rate = report.get_conversion_rate()
+        for product, arm in enumerate(pulled_arm):
+            delta = 0.3
+            mean1, mean2 = 0, 0
+
+            if len(self.conv_rate_history[product][arm]) > 10:
+                last_conv_rates = self.conv_rate_history[product][arm][-self.splitter:]
+                last_conv_rates.append(conv_rate[product])
+
+                mean1 = np.mean(self.conv_rate_history[product][arm][:-self.splitter])
+
+                mean2 = np.mean(last_conv_rates)
+
+            if self.t_arms[product, arm] > 11 and (mean1 < mean2 - delta or mean1 > mean2 + delta) and not np.isinf(
+                    self.upper_bounds[product, arm]):
+                # detected an abrupt change
+                self.t_arms[product, arm] = 0
+                self.means[product, arm] = 0
+                self.upper_bounds[product, arm] = np.inf
+                self.seen[product, arm] = 0
+                self.conv_rate_history[product][arm] = [conv_rate[product]]

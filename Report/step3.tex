@@ -1,7 +1,59 @@
-The new scenario we have to consider is the one in which not all the parameters are known: here the conversion rates of the customers and the features of our customers are unknown, so our web site is not able to distinguish one from another. 
+The new scenario we have to consider is the one in which not all the parameters are known: here the conversion rates of the customers, the probability of him to buy a product with a specific price, are unknown. Also the features of our customers are unknown, so our web site is not able to distinguish one from another. \\
+To solve the problem two bandit algorithm have been developed: UCB (Upper Confidence Bound) and TS (Thomson Sampling). 
+Both select every day the super arm to pull by estimating the conversion rates, with their parameters. After that they run a montecarlo simulation for each combination of arms, in order to determine the best super arm (the one that returns the highest reward estimated).\\
+The super arm selected is pulled in the enviroment to collect the actual reward and the learners parameters can be updated.\\
+Since the learners are not able to distinguish the different types of customers, so initially the alphas values are uniformally distruibuted ($[0.2, 0.2, 0.2, 0.2, 0.2]$) and the number of products bought for each price are set all to 1. Addittionally the convertion rate estimated each round by the learner are set equally to all the customer (like considering all of them as one).\\
+The number of daily interaction, customers that visit the e-commerce, is fixed to 100 and the time horizon, number of day of exploration each iteraction of the algorithm, to 300. The algorithms are also executed 5 rimes, that is the number of iteration.
 
-\subsection{Results}
-\subsubsection{UCB}
+\subsection{UCB}
+Upper Confidence Bound is a deterministic algorithm that associated an upper confidence bound to every arm, providing an optimistic estimation of the reward
+    every day (round) is chosen the arm with the highest upper confidence bound
+    it updates the upper confidence bound by observing the realization of the reward obtained by the arm pulled
+
+The steps are the following:
+\begin{enumerate}
+    \item Initially the means and the upper confidence bounds of each arm (price) for each product are set to zero and infinite respectivelly \[ means=
+    \begin{bmatrix}
+            0 & 0 & 0 & 0\\
+            0 & 0 & 0 & 0\\
+            0 & 0 & 0 & 0\\
+            0 & 0 & 0 & 0\\
+            0 & 0 & 0 & 0
+    \end{bmatrix}upperBound=
+    \begin{bmatrix}
+            \infty & \infty & \infty & \infty\\
+            \infty & \infty & \infty & \infty\\
+            \infty & \infty & \infty & \infty\\
+            \infty & \infty & \infty & \infty\\
+            \infty & \infty & \infty & \infty
+    \end{bmatrix}
+    \]
+    \item Estimate the conversio rates by the sum of the mean and the upper confidence bound of each arm\begin{minted}[breaklines]{python}
+        def estimate_conversion_rates(self):
+                return self.means + self.upper_bounds
+        \end{minted}
+    \item Select the super arm that return the highest reward fromn the MC simulation
+    \item Update the mean parameters of the arm pulled as:\begin{equation}
+            mean[p,a] = \frac{mean[p,a] * seen[p,a] + bought[p]}{tot\_seen[p,a]}
+        \end{equation}
+        \begin{itemize}
+            \item mean[p,a] is the actual mean of the product {\bf p} with price {\bf a}
+            \item seen[p,a] is the number of times the product {\bf p} with price {\bf a} has been seen since the day before
+            \item bought[p] is the number of times the product {\bf p} has been bought from day zero till now
+            \item tot\_seen[p,a] is the number of times the product {\bf p} with price {\bf a} has been seen from day zero till now (so is seen[p,a] plus the number of time this product has been seen this day)
+        \end{itemize}
+    \item Update the upper confidence bound parameters of the arm pulled as:
+        \begin{equation}
+            upper\_bound[p,a] = \sqrt{\frac{2 * \log tot\_samples}{seen[p,a]}}
+        \end{equation}
+        \begin{itemize}
+            \item tot\_samples is the total number of times the product {\bf p} has been seen till now
+            \item seen[p,a] is the number of times the product {\bf p} with price {\bf a} has been seen  till now 
+        \end{itemize}
+    \item Repeat from step 2 until the end of the iteraction (300 days)
+\end{enumerate}
+\subsubsection{Results}
+Even if the algorithm converge to the optimal arm at the beguinning of the process, at some day it changes the choice of the super arm to pull. This happenes because each time an arm is pulled its bound is reduced, and so at some point the ones less selected will have an higher bound. A bigger bound leads to an higher convertion rate and that is the reason why it will try new super arms, that were not pulled from long time.
 \begin{figure}[ht]
     \begin{center}
     \includegraphics[width=0.6\textwidth]{img/ucb3.png}
@@ -26,7 +78,17 @@ The new scenario we have to consider is the one in which not all the parameters 
         \end{center}
     \end{figure}
 \end{multicols}
-\subsubsection{TS}
+
+
+\subsection{TS}
+Thomson Sampling is a stochastic algorithm
+
+
+
+
+
+
+\subsubsection{Results}
 \begin{figure}[ht]
     \begin{center}
     \includegraphics[width=0.6\textwidth]{img/TS3.png}
