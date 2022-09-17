@@ -16,7 +16,7 @@ class GreedyLearner(Learner):
             self.products_available.append(product_available.copy())
         self.reword_config = [] #where I store the rewards of the 5 configurations
         self.report_config = []
-        self.number_config = 5
+        self.number_config = n_products #number of possible configuration equal the number of products since is an increment of one for each product
         self. counter = 0
 
 
@@ -81,7 +81,7 @@ class GreedyLearner(Learner):
                 sol.append(i)
             else:
                 number_of_maximum += 1
-        self.number_config = 5 - number_of_maximum
+        self.number_config = len(sol) #based on the number of products still available to be incremented (lower than maximum price)
         if self.number_config > 0:
             self.new_configuration = self.new_configuration[:self.number_config]
             self.products_available = self.products_available[:self.number_config]
