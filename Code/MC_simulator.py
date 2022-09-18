@@ -122,8 +122,7 @@ class MCSimulator(Simulator):
         report.update_starts(self.current_product)
         self.shopping_dfs(self.current_product, displayed_primary, report, super_arm, c)
 
-    def run(self, rounds, super_arm):  # TODO we should switch the arguments position in order to set rounds as optional
-        # TODO: this method could be accelerated using multiprocessing ( 1 process for product -> 5)
+    def run(self, rounds, super_arm):  
         report = ReportSimulation(len(super_arm))
         rounds = self.iterations_per_prod * len(super_arm)
         activations = []
@@ -132,8 +131,7 @@ class MCSimulator(Simulator):
             self.run_customer(c, super_arm, report)
             self.t += 1
             if self.t // self.iterations_per_prod > self.current_product: # estimate reward starting from this product
-                conversions = np.array(report.get_bought()) / self.iterations_per_prod # compute probability to be activated starting from the seed.
-                # conversions[self.current_product] = 1 # since I always start from this product, the activation is always 1
+                conversions = np.array(report.get_bought()) / self.iterations_per_prod 
                 activations.append(conversions)
                 report = ReportSimulation(len(super_arm))
         self.t = 0

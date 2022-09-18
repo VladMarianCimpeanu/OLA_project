@@ -41,10 +41,6 @@ class UCBLearner4(UCBLearner):
                 if self.estimated_n_items[product, arm] != 0:
                     self.upper_bounds_items[product, arm] = np.sqrt(2 * np.log(tot_samples) / self.estimated_n_items[product, arm])
 
-        #new_mean = 1 / np.maximum(self.mean_items.copy(), 1e-4)
-
-        #for customer in self.customers:
-            #customer.set_num_prods(new_mean)
 
 
     def select_superarm(self, rounds=100, reward=False):

@@ -2,10 +2,10 @@ The new scenario we have to consider is the one in which not all the parameters 
 To solve the problem two bandit algorithms have been developed: UCB-1 (Upper Confidence Bound) and TS (Thomson Sampling).
 Both select every day the super arm to pull by estimating the conversion rates, with their parameters. After that, they run a Montecarlo simulation for each combination of arms, in order to determine the best super arm (the one that returns the highest reward estimated).\\
 The super arm selected is pulled in the environment to collect the actual reward and the learners parameters can be updated.\\
-Since the learners are not able to distinguish the different types of customers, initially the alphas values (probability to start the interaction from a specific product) are uniformly distributed ($[0.2, 0.2, 0.2, 0.2, 0.2]$) and the number of products bought for each price are set all to 1. Additionally the conversion rate estimated each round by the learner are set equally to all the customer (like considering all of them as one).\\
+Since the learners are not able to distinguish the different types of customers, the conversion rate estimated each round by the learner are set equally to all the customer (like considering all of them as one).\\
 The number of daily interactions, customers that visit the e-commerce, is fixed to 100 and the time horizon, number of day of exploration each interaction of the algorithm, to 300. The algorithms are also executed 5 times, that is the number of iterations.
 
-\subsection{UCB}
+\subsection{UCB-1}
 Upper Confidence Bound is a deterministic algorithm that associated an upper confidence bound to every arm, providing an optimistic estimation of the reward.
 The steps are the following:
 \begin{enumerate}
