@@ -53,7 +53,7 @@ The steps are the following:
 Even if the algorithm converges to the optimal arm at the beginning of the process, someday it will change the choice of the super arm to pull. This happens because each time an arm is pulled its bound is reduced, and so at some point, the ones less selected will have a higher bound. A bigger bound leads to a higher conversion rate and that is the reason why it will try new super arms, that were not pulled for a long time.
 \begin{figure}[ht]
     \begin{center}
-    \includegraphics[width=0.6\textwidth]{img/ucb3.png}
+    \includegraphics[width=0.5\textwidth]{img/ucb3.png}
     \caption{UCB Reward}
     \label{fig:reward31}
     \end{center}
@@ -138,7 +138,7 @@ Thompson Sampling is a stochastic algorithm that set a prior on the expected val
 As we can see below the algorithm converge to the optimal super arm really quickly, so the regret goes to zero in the really first days. This is what we expected when there is a prior information that influences the choice of an arm.
 \begin{figure}[ht]
     \begin{center}
-    \includegraphics[width=0.6\textwidth]{img/TS3.png}
+    \includegraphics[width=0.5\textwidth]{img/TS3.png}
     \caption{TS Reward}
     \label{fig:reward32}
     \end{center}
