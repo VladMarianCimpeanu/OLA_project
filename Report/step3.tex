@@ -1,5 +1,5 @@
 The new scenario we have to consider is the one in which not all the parameters are known: here the conversion rates of the customers, the probability of them to buy a product with a specific price, are unknown. Also the features of our customers are unknown, so our web site is not able to distinguish one from another. \\
-To solve the problem two bandit algorithms have been developed: UCB-1 (Upper Confidence Bound) and TS (Thomson Sampling).
+To solve the problem two bandit algorithms have been developed: UCB-1 (Upper Confidence Bound) and TS (Thompson Sampling).
 Both select every day the super arm to pull by estimating the conversion rates, with their parameters. After that, they run a Montecarlo simulation for each combination of arms, in order to determine the best super arm (the one that returns the highest reward estimated).\\
 The super arm selected is pulled in the environment to collect the actual reward and the learners parameters can be updated.\\
 Since the learners are not able to distinguish the different types of customers, the conversion rate estimated each round by the learner are set equally to all the customer (like considering all of them as one).\\

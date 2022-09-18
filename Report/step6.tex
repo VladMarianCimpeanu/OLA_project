@@ -15,7 +15,7 @@ then that specific conversion rate has just changed. Due to the high noise that 
 \begin{align*}
     \hat{\alpha}_{t, t -\lambda}(p, a) \not\in \left[ \hat{\alpha}_{t-\lambda, 1}(p, a) - \delta, \hat{\alpha}_{t-\lambda, 1}(p, a) + \delta \right]
 \end{align*}
-where $\hat{\alpha}_{t, t -\lambda}(p, a)$ is the average of the last $\lambda$ conversion rates, whereas $ \hat{\alpha}_{t-\lambda, 1}(p, a)$ is the average of the first $t - \lambda$ conversion rates for that product $p$ at price $a$. This method reveals to be more robust to the noise of the environment, but requires more days to detect an anomaly, nevertheless, we can achieve great results setting $\lambda$ to 5 as we can see from Figures ~\ref{fig:reward61}, \ref{fig:regret61}, \ref{fig:cum_reg61}.\\
+where $\hat{\alpha}_{t, t -\lambda}(p, a)$ is the average of the last $\lambda$ conversion rates, whereas $ \hat{\alpha}_{t-\lambda, 1}(p, a)$ is the average of the first $t - \lambda$ conversion rates for that product $p$ at price $a$. This method reveals to be more robust to the noise of the environment, but requires more days to detect an anomaly, nevertheless, we can achieve great results setting $\lambda$ to 5 as we can see from Figures~\ref{fig:reward61}, \ref{fig:regret61}, \ref{fig:cum_reg61}.\\
 Once a conversion rate has been spotted as changing, all the data related to that specific pair (price, arm) are dropped, since those data are no more relevant.\\
 Here the code for the detection algorithm:
 \begin{minted}[breaklines]{python}
@@ -117,14 +117,14 @@ In this subsection we present the experimental results got interacting with a no
 \begin{figure}[ht]
     \begin{center}
     \includegraphics[width=0.6\textwidth]{img/sw_vs_active_reward.png}
-    \caption{TODO: CAMBIARE IMMAGINI Reward comparison between Learner with change detection algorithm and Learner with sliding window}
+    \caption{Reward comparison between Learner with change detection algorithm and Learner with sliding window}
     \label{fig:reward63}
     \end{center}
 \end{figure}
 \begin{multicols}{2}
     \begin{figure}[H]
         \begin{center}
-        \includegraphics[width=0.5\textwidth]{img/sw_vs_active_reward.png}
+        \includegraphics[width=0.5\textwidth]{img/sw_vs_active_regret.png}
         \caption{Regret comparison between Learner with change detection algorithm and Learner with sliding window}
         \label{fig:regret63}
         \end{center}
@@ -132,7 +132,7 @@ In this subsection we present the experimental results got interacting with a no
     \columnbreak
     \begin{figure}[H]
         \begin{center}
-        \includegraphics[width=0.5\textwidth]{img/sw_vs_active_reward.png}
+        \includegraphics[width=0.5\textwidth]{img/sw_vs_active_cum_reg.png}
         \caption{Cumulative regret comparison between Learner with change detection algorithm and Learner with sliding window}
         \label{fig:cum_reg63}
         \end{center}
