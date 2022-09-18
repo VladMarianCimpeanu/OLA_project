@@ -85,7 +85,7 @@ class Learner:
             customer.set_probability_buy(conversion_rates)
         simulation = Simulator(self.customers, self.graph, self.customers_distribution)
 
-        with Pool(processes=8) as pool:
+        with Pool(processes=16) as pool:
             rewards = pool.map(evaluate_superarm, [(simulation, self.prices, arm) for arm in self.super_arms])
             # rewards = [evaluate_superarm((simulation, self.prices, arm)) for arm in self.super_arms]
             # print(rewards, self.super_arms)

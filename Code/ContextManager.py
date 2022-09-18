@@ -104,8 +104,9 @@ class ContextTree(object):
             self.learner = root
 
         # compute current best super arm and best reward for aggregate customer
-        best_super_arm, best_maximum_estimate = self.learner.select_superarm(reward=True)
+        _, best_maximum_estimate = self.learner.select_superarm(reward=True)
         best_split_info = None
+        best_maximum_estimate = best_maximum_estimate - 5/np.sqrt(1e-2+np.sum([len(_) for _ in dict_report.values()]))
 
         # select best split among the features that has not been checked yet in the higher levels of the tree.
         for feature_id in left_indexes:
@@ -143,20 +144,30 @@ class ContextTree(object):
             r_dict_report = {k: [] for k in dict_report.keys()}
 
             # train new learners with the reports of their parent.
+            l_cnt = 0
+            r_cnt = 0
             for features, values in dict_report.items():
                 for pulled_arm, report in values:
                     if features[feature_id] == 0:
                         l_learner.update(pulled_arm, report)
                         l_dict_report[features].append((pulled_arm, report))
+                        l_cnt += 1
                     else:
                         r_learner.update(pulled_arm, report)
                         r_dict_report[features].append((pulled_arm, report))
+                        r_cnt += 1
 
             # compute the best estimates of the new learners.
             _, l_maximum_estimate = l_learner.select_superarm(reward=True)
             _, r_maximum_estimate = r_learner.select_superarm(reward=True)
 
-            estimate_reward = l_maximum_estimate + r_maximum_estimate
+            assert l_cnt == np.sum([len(_) for _ in l_dict_report.values()])
+            assert r_cnt == np.sum([len(_) for _ in r_dict_report.values()])
+
+            l_cnt = np.sum([len(_) for _ in l_dict_report])
+            r_cnt = np.sum([len(_) for _ in r_dict_report])
+
+            estimate_reward = l_maximum_estimate + r_maximum_estimate - 5 * l_prob / np.sqrt(1e-1+l_cnt) - 5 * r_prob / np.sqrt(1e-1+r_cnt)
 
             if estimate_reward > best_maximum_estimate:
                 best_maximum_estimate = estimate_reward

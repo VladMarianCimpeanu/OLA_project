@@ -1,18 +1,31 @@
 This step is very similar to step 4, however, we can observe the customer features.
 Therefore, we can set different price levels for every type of customer.
-To leverage this information, every two weeks a context context-generation algorithm is executed.
+To leverage this information, every two weeks (14 days) a context-generation algorithm is executed.
 The algorithm uses a feature tree to select the learner, and it is built using a greedy splitting technique.
+Every time the context-generation algorithm is called it generates a completely new feature tree.
+Consequently, the new tree might be shallower than the previous one.
 
 \subsection{How to build the feature tree}
 Starting from the root node, for each feature the algorithm computes the expected reward without splitting, so by training only a single learner and with splitting on the features, therefore, by training two learners on two partitions of the data.
-If the expected reward is larger in the latter case, the node is split in the two cases and the process continues recursively on every new node.
+If the lower bound of the expected reward is larger, the node is split in the two cases and the process continues recursively on every new node.
 The splitting condition is the following:
 \begin{equation}
     p_l\mu_l + p_r \mu_r \geq \mu,
 \end{equation}
 where $p_l$ and $p_r$ are the probability weights and $\mu$, $\mu_l$ and $\mu_r$ are the expected rewards.
+The $\mu$ value is computed as follows:
+\begin{equation}
+    \mu = \Tilde{x} - \sqrt{\frac{5}{|Z|}},
+\end{equation}
+where $\Tilde{x}$ is the expected reward computed by simulating the learner and $|Z|$ is the size of the data.
+
 
 \subsection{Results}
+The results obtained are far from optimal, however, this might be due to various reasons.
+First of all, the context-generation algorithm used has no guarantees to be optimal, so it is reasonable to be way worse than the clairvoyant.
+Secondly, the environment is run for a very short period of time, so it might not converge fast enough, not to mention that the environment is very noisy and the high standard deviation of their reward is a direct consequence of that phenomenon.
+All these factors might be the reasons for the suboptimal results of our approach.
+
 \subsubsection{UCB}
 \begin{figure}[ht]  
     \begin{center}

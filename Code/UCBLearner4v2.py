@@ -42,11 +42,15 @@ class UCBLearner4(UCBLearner):
                     self.upper_bounds_items[product, arm] = np.sqrt(2 * np.log(tot_samples) / self.estimated_n_items[product, arm])
 
 
+    def get_estimated_num_prod(self):
+        new_val = 0.1 + self.upper_bounds_items.copy()
+        return 1 / np.maximum(new_val * 10 * self.mean_items.copy(), 1e-4)
+
+
 
     def select_superarm(self, rounds=100, reward=False):
         # set new value of n_prod
-        new_val = self.mean_items.copy() / 20 + self.upper_bounds_items.copy()
-        inverse_mean = np.minimum(1 / np.maximum(new_val * 20, 1e-4), 1e4)
+        inverse_mean = self.get_estimated_num_prod()
 
         for customer in self.customers:
             customer.set_num_prods(inverse_mean)
