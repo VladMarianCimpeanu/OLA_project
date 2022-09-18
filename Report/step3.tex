@@ -1,15 +1,15 @@
-The new scenario we have to consider is the one in which not all the parameters are known: here the conversion rates of the customers, the probability of him to buy a product with a specific price, are unknown. Also the features of our customers are unknown, so our web site is not able to distinguish one from another. \\
-To solve the problem two bandit algorithm have been developed: UCB (Upper Confidence Bound) and TS (Thomson Sampling). 
-Both select every day the super arm to pull by estimating the conversion rates, with their parameters. After that they run a montecarlo simulation for each combination of arms, in order to determine the best super arm (the one that returns the highest reward estimated).\\
-The super arm selected is pulled in the enviroment to collect the actual reward and the learners parameters can be updated.\\
-Since the learners are not able to distinguish the different types of customers, so initially the alphas values are uniformally distruibuted ($[0.2, 0.2, 0.2, 0.2, 0.2]$) and the number of products bought for each price are set all to 1. Addittionally the convertion rate estimated each round by the learner are set equally to all the customer (like considering all of them as one).\\
-The number of daily interaction, customers that visit the e-commerce, is fixed to 100 and the time horizon, number of day of exploration each iteraction of the algorithm, to 300. The algorithms are also executed 5 rimes, that is the number of iteration.
+The new scenario we have to consider is the one in which not all the parameters are known: here the conversion rates of the customers, the probability of them to buy a product with a specific price, are unknown. Also the features of our customers are unknown, so our web site is not able to distinguish one from another. \\
+To solve the problem two bandit algorithms have been developed: UCB-1 (Upper Confidence Bound) and TS (Thomson Sampling).
+Both select every day the super arm to pull by estimating the conversion rates, with their parameters. After that, they run a Montecarlo simulation for each combination of arms, in order to determine the best super arm (the one that returns the highest reward estimated).\\
+The super arm selected is pulled in the environment to collect the actual reward and the learners parameters can be updated.\\
+Since the learners are not able to distinguish the different types of customers, initially the alphas values (probability to start the interaction from a specific product) are uniformly distributed ($[0.2, 0.2, 0.2, 0.2, 0.2]$) and the number of products bought for each price are set all to 1. Additionally the conversion rate estimated each round by the learner are set equally to all the customer (like considering all of them as one).\\
+The number of daily interactions, customers that visit the e-commerce, is fixed to 100 and the time horizon, number of day of exploration each interaction of the algorithm, to 300. The algorithms are also executed 5 times, that is the number of iterations.
 
 \subsection{UCB}
 Upper Confidence Bound is a deterministic algorithm that associated an upper confidence bound to every arm, providing an optimistic estimation of the reward.
 The steps are the following:
 \begin{enumerate}
-    \item Initially the means and the upper confidence bounds of each arm (price) for each product are set to zero and infinite respectivelly \[ means=
+    \item Initially the means and the upper confidence bounds of each arm (price) for each product are set to zero and infinite respectively \[ means=
     \begin{bmatrix}
             0 & 0 & 0 & 0\\
             0 & 0 & 0 & 0\\
@@ -25,7 +25,7 @@ The steps are the following:
             \infty & \infty & \infty & \infty
     \end{bmatrix}
     \]
-    \item Estimate the conversio rates by the sum of the mean and the upper confidence bound of each arm\begin{minted}[breaklines]{python}
+    \item Estimate the conversion rates by the sum of the mean and the upper confidence bound of each arm\begin{minted}[breaklines]{python}
         def estimate_conversion_rates(self):
                 return self.means + self.upper_bounds
         \end{minted}
@@ -45,12 +45,12 @@ The steps are the following:
         \end{equation}
         \begin{itemize}
             \item tot\_samples is the total number of times the product {\bf p} has been seen till now
-            \item seen[p,a] is the number of times the product {\bf p} with price {\bf a} has been seen  till now 
+            \item seen[p,a] is the number of times the product {\bf p} with price {\bf a} has been seen  till now
         \end{itemize}
     \item Repeat from step 2 until the end of the iteraction (300 days)
 \end{enumerate}
 \subsubsection{Results}
-Even if the algorithm converge to the optimal arm at the beguinning of the process, at some day it changes the choice of the super arm to pull. This happenes because each time an arm is pulled its bound is reduced, and so at some point the ones less selected will have an higher bound. A bigger bound leads to an higher convertion rate and that is the reason why it will try new super arms, that were not pulled from long time.
+Even if the algorithm converges to the optimal arm at the beginning of the process, at some day it changes the choice of the super arm to pull. This happens because each time an arm is pulled its bound is reduced, and so at some point the ones less selected will have an higher bound. A bigger bound leads to an higher convertion rate and that is the reason why it will try new super arms, that were not pulled from long time.
 \begin{figure}[ht]
     \begin{center}
     \includegraphics[width=0.6\textwidth]{img/ucb3.png}
@@ -78,7 +78,7 @@ Even if the algorithm converge to the optimal arm at the beguinning of the proce
 
 
 \subsection{TS}
-Thomson Sampling is a stochastic algorithm that set a prior on the expected value for every arm, and selects the arm with the best sample, accordingli tu the updated parameters. Those parameters are alled Beta parameters, for the distribution, and take account of the number of success ($\alpha$) and of insuccess ($\beta$). The sum of the two parameters is equal to the number of times the arm has been pulled.\\The steps are the following:
+Thompson Sampling is a stochastic algorithm that set a prior on the expected value for every arm, and selects the arm with the best sample, according to the updated parameters. Those parameters are called Beta parameters, for the distribution, and take account of the number of success ($\alpha$) and of insuccess ($\beta$). The sum of the two parameters is equal to the number of times the arm has been pulled.\\The steps are the following:
 \begin{enumerate}
     \item Set all the $\alpha$ and $\beta$ parameters equal to one. \[\begin{bmatrix}
     \begin{bmatrix}
@@ -122,7 +122,7 @@ Thomson Sampling is a stochastic algorithm that set a prior on the expected valu
         def estimate_conversion_rates(self):
             return np.random.beta(a=self.beta_parameters[:, :, 0], b=self.beta_parameters[:, :, 1])
         \end{minted}
-    \item Select the super arm that return the highest reward fromn the MC simulation
+    \item Select the super arm that return the highest reward from the MC simulation
     \item Update the $\alpha$ and $\beta$ parameters:\\
         $\alpha$[p, a] = $\alpha$[p, a] + bought[p]\\\\
         $\beta$[p, a] = $\beta$[p, a] + seen[p] - bought[p]
@@ -132,10 +132,10 @@ Thomson Sampling is a stochastic algorithm that set a prior on the expected valu
         \item bought[p] is the number of times the product {\bf p} has been bought till now
         \item seen[p] is the number of times the product {\bf p} has been visualized by the customers
     \end{itemize}
-    \item Repeat from step 2 until the end of the iteraction (300 days)
+    \item Repeat from step 2 until the end of the interaction (300 days)
 \end{enumerate}
 \subsubsection{Results}
-As we can see below the algorithm converge to the optimal super arm really quicly, so the regret goes to zero in the really first days. This is what expected when there is a prior information that influence the choice of an arm. 
+As we can see below the algorithm converge to the optimal super arm really quickly, so the regret goes to zero in the really first days. This is what expected when there is a prior information that influence the choice of an arm.
 \begin{figure}[ht]
     \begin{center}
     \includegraphics[width=0.6\textwidth]{img/TS3.png}
