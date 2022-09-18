@@ -23,5 +23,9 @@
 
 # Mac
 .DS_Store
+
+# minted
 *.pygtex
 *.pygstyle
+*.pyg
+/Report/_minted-main/
