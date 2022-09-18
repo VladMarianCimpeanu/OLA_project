@@ -3,9 +3,9 @@ The algorithm works as follows:
 \begin{enumerate}
     \item set the prices of all the products with the lowest one
     \item collect the reward obtained by increasing, each time, the price of just one product of the original super arm
-    \item compare the five different configurations obtained with the first one. There could be two case\begin{enumerate}
+    \item compare the five different configurations obtained with the first one. There could be two cases\begin{enumerate}
         \item there is an increase of the reward, so select the one that gave the maximum reward (the highest increase) as the best one and repeat the algorithm from point 2
-        \item there is no increase (all the new configuration is worst than the previous one) and stop the algorithm
+        \item there is no increase (all the new configurations are worse than the previous one) and stop the algorithm
     \end{enumerate}
     \item Return the actual best configuration.
 \end{enumerate}
