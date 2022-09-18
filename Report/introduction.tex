@@ -1,21 +1,21 @@
 Nowadays one big problem of e-commerces is to allocate the best price to its products so that,
 the seller can maximize its revenue.\\
-The main issue is that increasing the price of a product leads to less people interested in that product, thus
-increasing the price is not necessarily beneficial to the seller. In contrast decreasing the price will increase the number
+The main issue is that increasing the price of a product leads to fewer people interested in that product, thus
+increasing the price is not necessarily beneficial to the seller. In contrast, decreasing the price will increase the number
 of people interested in the product, but the revenue will be of course sub-optimal.\\
-In order to maximize the revenue we can analyze the demand curve of a given product, which is
+In order to maximize the revenue, we can analyze the demand curve of a given product, which is
 a graphical representation of the relationship between the price $p_i$ of a good or service $i$ and the quantity demanded $q_i(p_i)$
 for a given period of time, and find the price $\hat{p}$ such that:
 \begin{align*}
     \hat{p} = \argmax_p(pq(p))
 \end{align*}
-Unfortunately, in real world problems, the demand curve is not available, furthermore, we need to estimate this curve by interacting with the environment. One main problem of interacting with an unknown environment is that exploration costs a lot of money, so we want to find the best prices in the shortest amount of time to decrease the regret. \\
+Unfortunately, in real-world problems, the demand curve is not available, furthermore, we need to estimate this curve by interacting with the environment. One main problem of interacting with an unknown environment is that exploration costs a lot of money, so we want to find the best prices in the shortest amount of time to decrease the regret. \\
 In order to do so, we can use reinforcement learning techniques such as Multi Armed Bandit (MAB) algorithms.
 \subsection*{Practical example}
-In this project we want to study the case of a new e-commerce entering the market called ANS$^2$ that sells skateboarding clothes. More precisely, it is going to sell unisex t-shirts, hoodies, t-shirts, shoes and shirts.\\ For simplicity sake we can assume the website can sell an unlimited number of units without any storage cost whose goal is to minimize the cumulative regret while learning.\\
-The web site of the vendor is structured as follows: in every webpage, a single product, called primary, is displayed together with its price. The user can add a number of units of this product to the cart. After the product has been added to the cart, two products, called secondary, are recommended. When displaying the secondary products, the price is hidden. Furthermore, the products are recommended in two slots, one above the other, thus providing more importance to the product displayed in the slot above. The website will propose only products that the customer has never seen before.
+In this project, we want to study the case of a new e-commerce entering the market called ANS$^2$ that sells skateboarding clothes. More precisely, it is going to sell unisex t-shirts, hoodies, t-shirts, shoes, and shirts.\\ For simplicity's sake we can assume the website can sell an unlimited number of units without any storage cost whose goal is to minimize the cumulative regret while learning.\\
+The website of the vendor is structured as follows: in every webpage, a single product, called primary, is displayed together with its price. The user can add a number of units of this product to the cart. After the product has been added to the cart, two products, called secondary, are recommended. When displaying the secondary products, the price is hidden. Furthermore, the products are recommended in two slots, one above the other, thus providing more importance to the product displayed in the slot above. The website will propose only products that the customer has never seen before.
 If the user clicks on a secondary product, a new tab on the browser is opened and, in the loaded webpage, the clicked product is displayed as primary together with its price.\\
-%The choice of the products that must be recommended to the user are already fixed by the business unit as presented in Figure~\ref{fig:business_graph}.\\\\
+%The choice of the products that must be recommended to the user is already fixed by the business unit as presented in Figure~\ref{fig:business_graph}.\\\\
 %\begin{figure}
 %    \centering
 %    \includegraphics[scale=0.4]{img/products/business_graph.png}

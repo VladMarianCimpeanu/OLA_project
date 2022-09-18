@@ -36,16 +36,16 @@ The steps are the following:
         \begin{itemize}
             \item mean[p,a] is the actual mean of the product {\bf p} with price {\bf a}
             \item seen[p,a] is the number of times the product {\bf p} with price {\bf a} has been seen until the day before
-            \item bought[p] is the number of times the product {\bf p} has been bought from day zero untill now
-            \item tot\_seen[p,a] is the number of times the product {\bf p} with price {\bf a} has been seen from day zero untill now (so is seen[p,a] plus the number of times this product has been seen today)
+            \item bought[p] is the number of times the product {\bf p} has been bought from day zero until now
+            \item tot\_seen[p,a] is the number of times the product {\bf p} with price {\bf a} has been seen from day zero until now (so is seen[p,a] plus the number of times this product has been seen today)
         \end{itemize}
-    \item Update the upper confidence bound parameters of the arm pulled as according to the observations of the environment:
+    \item Update the upper confidence bound parameters of the arm pulled according to the observations of the environment:
         \begin{equation}
             upper\_bound[p,a] = \sqrt{\frac{2 * \log (tot\_samples)}{seen[p,a]}}
         \end{equation}Where:
         \begin{itemize}
-            \item tot\_samples is the total number of times the product {\bf p} has been seen untill now
-            \item seen[p,a] is the number of times the product {\bf p} with price {\bf a} has been seen  untill now
+            \item tot\_samples is the total number of times the product {\bf p} has been seen until now
+            \item seen[p,a] is the number of times the product {\bf p} with price {\bf a} has been seen  until now
         \end{itemize}
     \item Repeat from step 2 until the end of the interactions (300 days)
 \end{enumerate}
@@ -79,7 +79,7 @@ Even if the algorithm converges to the optimal arm at the beginning of the proce
 
 \subsection{TS}
 Thompson Sampling is a stochastic algorithm that sets a prior on the expected value for every arm, and selects the arm with the best sample, according to the updated parameters. Those parameters are called Beta parameters and take account of the number of successes ($\alpha$) and failures ($\beta$). The sum of the two parameters is equal to the number of times the arm has been pulled.\\
-Since we are dealing with a combinatorial problem, for each arm, we draw a sample from their conversion rate prior distribution and use those samples to evaluate the value of each super arm.\\
+Since we are dealing with a combinatorial problem, for each arm, we draw a sample from the conversion rate of the prior distribution and use those samples to evaluate the value of each super arm.\\
 The steps are the following:
 \begin{enumerate}
     \item Set all the $\alpha$ and $\beta$ parameters equal to one. \[\begin{bmatrix}
@@ -131,7 +131,7 @@ The steps are the following:
     \begin{itemize}
         \item $\alpha[p, a]$ is the alpha parameter for the product {\bf p} with the price {\bf a}
         \item $\beta[p, a]$ is the beta parameter for the product {\bf p} with the price {\bf a}
-        \item bought[p] is the number of times the product {\bf p} has been bought untill now
+        \item bought[p] is the number of times the product {\bf p} has been bought until now
         \item seen[p] is the number of times the product {\bf p} has been visualized by the customers
     \end{itemize}
     \item Repeat from step 2 until the end of the interaction (300 days)
