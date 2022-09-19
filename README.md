@@ -4,11 +4,15 @@ Online Learning Application Project
 Course held @ Politecnico di Milano\
 Acadamic year 2021 - 2022
 
-Developed by...
+## Developed by
+| Name | Surname | person code | github | 
+|------|---------|--------|--------|
+| Sofia | Martellozzo | 10623060 | [link](https://github.com/sofiamartellozzo)|
+| Vlad Marian | Cimpeanu | 10606922 | [link](https://github.com/VladMarianCimpeanu)|
+| Lorenzo | Rossi | 10698834 | [link](https://github.com/tpoppo)|
 
- *Social influence techniques and Pricing*
- 
- Description ...
+## Topic
+*Social influence techniques and Pricing*
 
 
 ### Compile the report
