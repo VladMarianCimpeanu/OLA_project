@@ -13,15 +13,27 @@ As said before the first five steps are the same, so here is reported how the gr
 \end{itemize}
 \subsection{TS}
 In this case, the Thomson Sampling does exactly the same as the UCB-1 to estimate the graph weights.
+\newpage
 \subsection{Results}
 Also in this case the results are very similar to the previous step: both algorithms perform a little bit worse than in the case in which only one parameter was uncertain (conversion rates).\\ Another thing that remains unchanged is that TS performed better than UCB-1 by reaching the optimal super arm faster.
-\begin{figure}[ht]
-    \begin{center}
-    \includegraphics[width=0.6\textwidth]{img/ucb_reward5.png}
-    \caption{UCB Reward}
-    \label{fig:reward51}
-    \end{center}
-\end{figure}
+\begin{multicols}{2}
+    \begin{figure}[H]
+        \begin{center}
+        \includegraphics[width=0.5\textwidth]{img/ucb_reward5.png}
+        \caption{UCB Reward}
+        \label{fig:reward51}
+        \end{center}
+    \end{figure}
+    \columnbreak
+    \begin{figure}[H]
+        \begin{center}
+        \includegraphics[width=0.5\textwidth]{img/ts_reward5.png}
+        \caption{TS Reward}
+        \label{fig:reward52}
+        \end{center}
+    \end{figure}
+\end{multicols}
+
 \begin{multicols}{2}
     \begin{figure}[H]
         \begin{center}
@@ -39,13 +51,6 @@ Also in this case the results are very similar to the previous step: both algori
         \end{center}
     \end{figure}
 \end{multicols}
-\begin{figure}[ht]
-    \begin{center}
-    \includegraphics[width=0.6\textwidth]{img/ts_reward5.png}
-    \caption{TS Reward}
-    \label{fig:reward52}
-    \end{center}
-\end{figure}
 \begin{multicols}{2}
     \begin{figure}[H]
         \begin{center}
