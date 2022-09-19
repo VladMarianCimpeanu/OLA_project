@@ -76,7 +76,6 @@ def shopping_dfs(self, primary, displayed_primary, report, super_arm, c):
         report.move(primary, secondary)
         self.shopping_dfs(secondary, displayed_primary, report, super_arm, c)
 \end{minted}
- \newpage
 Finally, we compute the expected reward as:
 \begin{align*}
     r_{a, i} = \frac{1}{N}\sum_{p \in \mathcal{P}}\alpha_{i, p} a_{p} n_{a, p}
@@ -118,3 +117,16 @@ def run_dp(self, super_arm):
       ans += p * alpha * dp(primary, 0)
   return ans
 \end{minted}
+\subsection{Assumptions}
+In this section we list the main assumptions we undertook to face this problem:
+\begin{itemize}
+    \item for simplicity we assume that the value $\lambda$ for the second displayed product is equal to 1 without loss of generality.
+    \item The probability $\alpha_0$ which is the probability to land on another website is omitted, since it does not add any additional feature to the problem.
+    \item Customers, accordingly to their behaviour can be grouped into three classes:
+    \begin{enumerate}
+        \item Boys
+        \item Girls
+        \item Adults
+    \end{enumerate}
+    Note: this is just an assumption used to model the customer of the environment, the learner is not acknowledged about this assumption.
+\end{itemize}
