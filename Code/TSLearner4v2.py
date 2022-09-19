@@ -23,8 +23,8 @@ class TSLearner4(TSLearner):
         tot_bought = report.get_amount_bought()
         seen = report.get_bought()
         for index, arm in enumerate(pulled_arm):
-            self.beta_items_parameters[index, arm, 0] = self.beta_items_parameters[index, arm, 0] + tot_bought[index]
-            self.beta_items_parameters[index, arm, 1] = self.beta_items_parameters[index, arm, 1] + seen[index]
+            self.beta_items_parameters[index, arm, 0] = self.beta_items_parameters[index, arm, 0] + seen[index]
+            self.beta_items_parameters[index, arm, 1] = self.beta_items_parameters[index, arm, 1] + tot_bought[index]
 
     def select_superarm(self, rounds=100, reward=False):
         # set new value of n_prod

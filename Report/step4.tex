@@ -65,13 +65,13 @@ As expected, having less knowledge leads to a solution a little bit worse than t
 \subsection{TS}
 Thomson Sampling estimates the alpha ratios exactly as the UCB with the Equation ~\ref{eqn:alpha}.\\About the estimation of the number of products sold, the method adopted is the same as the second version for the UCB-1. For obvious reasons, the additional parameters are the $\alpha$ and $\beta$ parameters of the Beta distribution used for the additional MAB. The update of $\alpha$ is done as follows:
 \begin{align*}
-    \alpha[p, a] = \alpha[p, a] + tot\_bought[p]
+    \alpha[p, a] = \alpha[p, a] + seen[p]
 \end{align*}
-where tot\_bought [p] is the total amount of products {\bf p} bought from the first day until now, whereas the update of the $\beta$ parameters is:
+where seen [p] is the total amount of products {\bf p} bought from the first day until now, whereas the update of the $\beta$ parameters is:
 \begin{align*}
-    \beta[p, a] = \beta [p, a] + seen[p]
+    \beta[p, a] = \beta [p, a] + tot\_bought[p]
 \end{align*}
-where seen [p] is the number of times the product {\bf p} has been bought until now.\\\\
+where tot\_bought [p] is the number of times the product {\bf p} has been bought until now.\\\\
 The two parameters calculated above are updated in the customer's attributes when the learner has to select which super arm to pull.\\
 
 \subsubsection{Results}
